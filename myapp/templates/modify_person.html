@@ -1,0 +1,9 @@
+<h1>Editar persona</h1>
+
+<form action="{% url 'confirm_changes' %}" method="POST">
+    {% csrf_token %}
+    {{ form }}
+    <button>
+        Editar
+    </button>
+</form>
