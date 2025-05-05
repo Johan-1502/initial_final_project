@@ -12,7 +12,7 @@ def index(request):
 
 def create_person(request):
     if request.method == "GET":
-        return render(request, "create_person.html", {"form": InputPersonData()})
+        return render(request, "create-people.html", {"form": InputPersonData()})
     else:
         services.createPerson(request)
         people = services.getAllPeople()
