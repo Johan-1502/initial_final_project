@@ -1,12 +1,11 @@
-from django.urls import path, include
+from django.urls import path
 from . import views
 
 urlpatterns = [
-    path("", views.index, name="index"),
-    path("create_person/", views.create_person, name="create_person"),
-    path("search_person/", views.search_person, name="search_person"),
-    path("show_people/", views.show_people, name="show_people"),
-    path("delete_person/", views.delete_person, name="delete_person"),
-    path("edit_person/", views.edit_person, name="edit_person"),
-    path("confirm_changes/", views.confirm_changes, name="confirm_changes")
+    path("", views.show_people, name="show_people"),  # Página principal
+    path("create-person/", views.create_person, name="create_person"),
+    path("search-person/", views.search_person, name="search_person"),
+    path("delete-person/<int:id>/", views.delete_person, name="delete_person"),
+    path("edit-person/", views.edit_person, name="edit_person"),
+    path("get-person/<int:dni>/", views.get_person, name="get_person"),
 ]

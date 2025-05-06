@@ -31,7 +31,7 @@ def searchPerson(dni):
 
 
 def getAllPeople():
-    return Person.objects.filter(isVisible=True)
+    return Person.objects.all()  # Devuelve todas las personas de la base de datos
 
 
 def deletePerson(dni):
@@ -57,3 +57,10 @@ def editPerson(request):
         raise k
     except Exception as e:
         raise e
+
+
+def getPersonById(dni):
+    try:
+        return Person.objects.get(dni=dni)  # Busca la persona por su DNI
+    except Person.DoesNotExist:
+        raise Person.DoesNotExist(f"No se encontró una persona con el DNI {dni}")
