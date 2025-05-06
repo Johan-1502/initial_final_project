@@ -72,7 +72,7 @@
             <div class="col-md-6">
               <h5 class="fw-bold">Persona Seleccionada</h5>
               <div id="selectedPerson">
-                <form id="updateForm" method="POST">
+                <form action="{% url 'confirm_changes' %}" id="updateForm" method="POST">
                   {% csrf_token %}
                   <label for="detail-cc"><strong>CC:</strong></label>
                   <input id="detail-cc" name="dni" type="text" class="form-control mb-2" readonly>
@@ -89,7 +89,7 @@
                   <label for="detail-correo"><strong>Correo:</strong></label>
                   <input id="detail-correo" name="email" type="text" class="form-control mb-2" disabled>
 
-                  <button id="updateButton" type="button" class="btn btn-success mt-3" disabled>Actualizar</button>
+                  <button id="updateButton" type="submit" class="btn btn-success mt-3" disabled>Actualizar</button>
                 </form>
               </div>
             </div>

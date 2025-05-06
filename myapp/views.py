@@ -25,23 +25,25 @@ def create_person(request):
 def search_person(request):
     if request.method == "GET":
         people = services.getAllPeople()
-        return render(request, "search_person.html",  {"people": people})
+        return render(request, "search_person.html", {"people": people})
     else:
         people = services.searchPerson(request.POST["dni"])
         return render(request, "search_person.html", {"people": people})
 
+
 def search_person_to_edit(request):
     if request.method == "GET":
         people = services.getAllPeople()
-        return render(request, "edite-people.html",  {"people": people})
+        return render(request, "edite-people.html", {"people": people})
     else:
         people = services.searchPerson(request.POST["dni"])
         return render(request, "edite-people.html", {"people": people})
 
+
 def search_person_to_delete(request):
     if request.method == "GET":
         people = services.getAllPeople()
-        return render(request, "delete_people.html",  {"people": people})
+        return render(request, "delete_people.html", {"people": people})
     else:
         people = services.searchPerson(request.POST["dni"])
         return render(request, "delete_people.html", {"people": people})
@@ -71,8 +73,12 @@ def delete_person_by_dni(request):
 
 def edit_person(request):
     if request.method == "GET":
-        people = Person.objects.filter(isVisible=True)  # Obtiene todas las personas visibles
-        return render(request, "edite-people.html", {"people": people, "form": UpdatePersonForm()})
+        people = Person.objects.filter(
+            isVisible=True
+        )  # Obtiene todas las personas visibles
+        return render(
+            request, "edite-people.html", {"people": people, "form": UpdatePersonForm()}
+        )
 
     elif request.method == "POST":
         dni = request.POST.get("dni")
@@ -81,11 +87,21 @@ def edit_person(request):
 
         if form.is_valid():
             form.save()  # Guardar los cambios en la base de datos
-            people = Person.objects.filter(isVisible(True))  # Actualizar la lista de personas
-            return render(request, "edite-people.html", {"people": people, "form": form, "success": True})
+            people = Person.objects.filter(
+                isVisible(True)
+            )  # Actualizar la lista de personas
+            return render(
+                request,
+                "edite-people.html",
+                {"people": people, "form": form, "success": True},
+            )
         else:
             people = Person.objects.filter(isVisible=True)
-            return render(request, "edite-people.html", {"people": people, "form": form, "error": True})
+            return render(
+                request,
+                "edite-people.html",
+                {"people": people, "form": form, "error": True},
+            )
 
 
 def get_person(request, dni):
@@ -105,8 +121,10 @@ def get_person(request, dni):
 
 def confirm_changes(request):
     services.editPerson(request)
-    people = services.searchPerson(request.POST["dni"])
-    return render(request, "details_person.html", {"people": people})
+    people = services.getAllPeople()
+    return render(
+        request, "edite-people.html", {"people": people, "form": UpdatePersonForm()}
+    )
 
 
 def filter_people(request):
@@ -141,13 +159,18 @@ def update_person(request):
             person.address = data["address"]
             person.email = data["email"]
             person.save()  # Guardar los cambios en la base de datos
-            return JsonResponse({"success": True, "person": {
-                "dni": person.dni,
-                "name": person.name,
-                "phoneNumber": person.phoneNumber,
-                "address": person.address,
-                "email": person.email,
-            }})
+            return JsonResponse(
+                {
+                    "success": True,
+                    "person": {
+                        "dni": person.dni,
+                        "name": person.name,
+                        "phoneNumber": person.phoneNumber,
+                        "address": person.address,
+                        "email": person.email,
+                    },
+                }
+            )
         except Person.DoesNotExist:
             return JsonResponse({"success": False, "error": "Persona no encontrada"})
         except Exception as e:
