@@ -27,17 +27,18 @@ def createPerson(request):
 
 
 
-def searchPerson(dni):
-    person = Person.objects.filter(dni=dni)
-    return person
+def searchPerson(infoToFilter):
+    people = Person.objects.filter(dni__icontains=infoToFilter) | Person.objects.filter(name__icontains=infoToFilter)
+    return people.distinct()
 
 
 def getAllPeople():
-    return Person.objects.all()  # Devuelve todas las personas de la base de datos
+    return Person.objects.filter(isVisible=True)
 
 
 def deletePerson(dni):
     persons = Person.objects.filter(dni=dni)
+    print(persons)
     for person in persons:
         person.isVisible = False
         person.save()

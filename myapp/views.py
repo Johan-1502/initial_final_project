@@ -10,7 +10,7 @@ import json
 
 
 def index(request):
-    return render(request, "index.html")
+    return render(request, "people.html")
 
 
 def create_person(request):
@@ -19,15 +19,32 @@ def create_person(request):
     else:
         services.createPerson(request)
         people = services.getAllPeople()
-        return render(request, "show_people.html", {"people": people})
+        return render(request, "search_person.html", {"people": people})
 
 
 def search_person(request):
     if request.method == "GET":
-        return render(request, "search_person.html", {"form": SearchPerson()})
+        people = services.getAllPeople()
+        return render(request, "search_person.html",  {"people": people})
     else:
         people = services.searchPerson(request.POST["dni"])
-        return render(request, "details_person.html", {"people": people})
+        return render(request, "search_person.html", {"people": people})
+
+def search_person_to_edit(request):
+    if request.method == "GET":
+        people = services.getAllPeople()
+        return render(request, "edite-people.html",  {"people": people})
+    else:
+        people = services.searchPerson(request.POST["dni"])
+        return render(request, "edite-people.html", {"people": people})
+
+def search_person_to_delete(request):
+    if request.method == "GET":
+        people = services.getAllPeople()
+        return render(request, "delete_people.html",  {"people": people})
+    else:
+        people = services.searchPerson(request.POST["dni"])
+        return render(request, "delete_people.html", {"people": people})
 
 
 def show_people(request):
@@ -35,10 +52,21 @@ def show_people(request):
     return render(request, "people.html", {"people": people})
 
 
-def delete_person(request, id):
+def delete_person_by_id(request, id):
+    print(id)
     services.deletePerson(id)
     people = services.getAllPeople()
-    return render(request, "show_people.html", {"people": people})
+    return render(request, "delete_people.html", {"people": people})
+
+
+def delete_person_by_dni(request):
+    if request.method == "GET":
+        people = services.getAllPeople()
+        return render(request, "delete_people.html", {"people": people})
+    else:
+        services.deletePerson(request.POST["dni"])
+        people = services.getAllPeople()
+        return render(request, "show_people.html", {"people": people})
 
 
 def edit_person(request):
