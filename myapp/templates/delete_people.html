@@ -1,0 +1,116 @@
+{% extends 'barra_lateral.html' %}
+
+{% block content %}
+<form method="POST">
+    {% csrf_token %}
+    {{ form }}
+    <button>
+        eliminar
+    </button>
+</form>
+
+<div class="content-panel col-md-8 col-lg-9 d-flex align-items-center justify-content-center">
+    <div class="container" style="max-width: 1200px;">
+
+        <!-- Botón de volver -->
+        <div class="mb-3">
+            <button type="button" class="btn btn-outline-secondary" onclick="window.history.back()">
+                <i class="bi bi-arrow-left"></i>
+            </button>
+        </div>
+
+        <h2 class="text-center mb-4">Buscar una persona</h2>
+
+        <div class="row g-3">
+            <!-- Panel de búsqueda -->
+            <div class="col-md-6">
+                <label for="searchInput" class="form-label fw-bold">Buscar por CC / Nombre</label>
+                <input id="searchInput" type="text" class="form-control mb-3"
+                    placeholder="Escribe un nombre o cédula..." style="height: 4em;">
+
+                <ul id="resultsList" class="list-group">
+                    <!-- Lista de personas se llenará dinámicamente -->
+                </ul>
+            </div>
+
+            <!-- Panel de detalles -->
+            <!-- Panel de detalles -->
+            <div class="col-md-6">
+                <h5 class="fw-bold">Persona Seleccionada</h5>
+                <div id="selectedPerson">
+                    <p><strong>CC:</strong> <span id="detail-cc">---</span></p>
+                    <p><strong>Nombre:</strong> <span id="detail-nombre">---</span></p>
+                    <p><strong>Teléfono:</strong> <span id="detail-telefono">---</span></p>
+                    <p><strong>Dirección:</strong> <span id="detail-direccion">---</span></p>
+                    <p><strong>Correo:</strong> <span id="detail-correo">---</span></p>
+                    <p><strong>Tipo:</strong> <span id="detail-tipo">---</span></p>
+                </div>
+
+                <!-- Botón Editar persona -->
+                <div class="d-grid mt-3">
+                    <button id="editPersonBtn" class="btn btn-warning btn-lg rounded-3">Eliminar persona</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    const personas = [
+        { cc: "10501", nombre: "Lucía Martínez", telefono: "12345", direccion: "Cra 12", correo: "lu.ma@gmail.com", tipo: "Empleado" },
+        { cc: "10502", nombre: "Carlos Fernández", telefono: "67890", direccion: "Av 45", correo: "carlosf@example.com", tipo: "Cliente" },
+        { cc: "10503", nombre: "María González", telefono: "11122", direccion: "Cl 19", correo: "mariag@example.com", tipo: "Empleado" },
+        { cc: "10504", nombre: "Javier Rodríguez", telefono: "33445", direccion: "Tv 3", correo: "javierr@example.com", tipo: "Proveedor" }
+    ];
+
+    const searchInput = document.getElementById('searchInput');
+    const resultsList = document.getElementById('resultsList');
+    const detailElements = {
+        cc: document.getElementById('detail-cc'),
+        nombre: document.getElementById('detail-nombre'),
+        telefono: document.getElementById('detail-telefono'),
+        direccion: document.getElementById('detail-direccion'),
+        correo: document.getElementById('detail-correo'),
+        tipo: document.getElementById('detail-tipo')
+    };
+
+    function mostrarDetalles(persona) {
+        detailElements.cc.textContent = persona.cc;
+        detailElements.nombre.textContent = persona.nombre;
+        detailElements.telefono.textContent = persona.telefono;
+        detailElements.direccion.textContent = persona.direccion;
+        detailElements.correo.textContent = persona.correo;
+        detailElements.tipo.textContent = persona.tipo;
+    }
+
+    function actualizarResultados() {
+        const query = searchInput.value.toLowerCase();
+        resultsList.innerHTML = '';
+        const resultados = personas.filter(p =>
+            p.cc.includes(query) || p.nombre.toLowerCase().includes(query)
+        );
+
+        resultados.forEach(p => {
+            const li = document.createElement('li');
+            li.className = "list-group-item d-flex justify-content-between align-items-center";
+            li.innerHTML = `
+      <span>${p.cc} ${p.nombre}</span>
+      <button class="btn btn-sm btn-outline-primary">Ver</button>
+    `;
+            li.querySelector("button").onclick = () => mostrarDetalles(p);
+            resultsList.appendChild(li);
+        });
+    }
+
+    searchInput.addEventListener('input', actualizarResultados);
+    window.addEventListener('DOMContentLoaded', actualizarResultados); // Cargar resultados iniciales
+</script>
+{% endblock %}
