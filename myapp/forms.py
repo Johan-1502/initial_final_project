@@ -1,4 +1,5 @@
 from django import forms
+from .models import Person
 
 class InputPersonData(forms.Form):
     name = forms.CharField(
@@ -46,3 +47,15 @@ class InputPersonData(forms.Form):
 
 class SearchPerson(forms.Form):
     dni = forms.IntegerField(label="DNI de la persona")
+
+class UpdatePersonForm(forms.ModelForm):
+    class Meta:
+        model = Person
+        fields = ["dni", "name", "phoneNumber", "address", "email"]
+        widgets = {
+            "dni": forms.TextInput(attrs={"readonly": "readonly", "class": "form-control mb-2"}),
+            "name": forms.TextInput(attrs={"class": "form-control mb-2"}),
+            "phoneNumber": forms.TextInput(attrs={"class": "form-control mb-2"}),
+            "address": forms.TextInput(attrs={"class": "form-control mb-2"}),
+            "email": forms.EmailInput(attrs={"class": "form-control mb-2"}),
+        }

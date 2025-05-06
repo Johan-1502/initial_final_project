@@ -8,4 +8,5 @@ urlpatterns = [
     path("delete-person/<int:id>/", views.delete_person, name="delete_person"),
     path("edit-person/", views.edit_person, name="edit_person"),
     path("get-person/<int:dni>/", views.get_person, name="get_person"),
+    path("filter-people/", views.filter_people, name="filter_people"),  # Nueva ruta
 ]

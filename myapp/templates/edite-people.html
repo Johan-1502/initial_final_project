@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Gestión de Personas</title>
+  <title>Editar Persona</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
   {% load static %}
@@ -56,15 +56,25 @@
           <div class="row g-3">
             <!-- Panel de búsqueda -->
             <div class="col-md-6">
-              <label for="searchInput" class="form-label fw-bold">Buscar por CC / Nombre</label>
-              <input id="searchInput" type="text" class="form-control mb-3" placeholder="Escribe un nombre o cédula..."
-                style="height: 4em;">
+              <label for="searchInput" class="form-label fw-bold">Buscar por cédula</label>
+              <div class="input-group mb-3">
+                <input id="searchInput" type="text" class="form-control" placeholder="Ingrese la cédula">
+                <button id="searchButton" class="btn btn-primary">Buscar</button>
+              </div>
 
               <ul id="resultsList" class="list-group">
                 {% for person in people %}
                 <li class="list-group-item d-flex justify-content-between align-items-center">
                   <span>{{ person.dni }} - {{ person.name }}</span>
-                  <button class="btn btn-sm btn-outline-primary" onclick="viewPerson('{{ person.dni }}')">Ver</button>
+                  <button class="btn btn-sm btn-outline-primary"
+                          onclick="mostrarDetalles(this)"
+                          data-dni="{{ person.dni }}"
+                          data-name="{{ person.name }}"
+                          data-phone="{{ person.phoneNumber }}"
+                          data-address="{{ person.address }}"
+                          data-email="{{ person.email }}">
+                    Ver
+                  </button>
                 </li>
                 {% endfor %}
               </ul>
@@ -74,16 +84,25 @@
             <div class="col-md-6">
               <h5 class="fw-bold">Persona Seleccionada</h5>
               <div id="selectedPerson">
-                <p><strong>CC:</strong> <span id="detail-cc">---</span></p>
-                <p><strong>Nombre:</strong> <span id="detail-nombre">---</span></p>
-                <p><strong>Teléfono:</strong> <span id="detail-telefono">---</span></p>
-                <p><strong>Dirección:</strong> <span id="detail-direccion">---</span></p>
-                <p><strong>Correo:</strong> <span id="detail-correo">---</span></p>
-              </div>
+                <form id="updateForm" method="POST">
+                  {% csrf_token %}
+                  <label for="detail-cc"><strong>CC:</strong></label>
+                  <input id="detail-cc" name="dni" type="text" class="form-control mb-2" readonly>
 
-              <!-- Botón Editar persona -->
-              <div class="d-grid mt-3">
-                <button id="editPersonBtn" class="btn btn-warning btn-lg rounded-3">Editar persona</button>
+                  <label for="detail-nombre"><strong>Nombre:</strong></label>
+                  <input id="detail-nombre" name="name" type="text" class="form-control mb-2" disabled>
+
+                  <label for="detail-telefono"><strong>Teléfono:</strong></label>
+                  <input id="detail-telefono" name="phoneNumber" type="text" class="form-control mb-2" disabled>
+
+                  <label for="detail-direccion"><strong>Dirección:</strong></label>
+                  <input id="detail-direccion" name="address" type="text" class="form-control mb-2" disabled>
+
+                  <label for="detail-correo"><strong>Correo:</strong></label>
+                  <input id="detail-correo" name="email" type="text" class="form-control mb-2" disabled>
+
+                  <button id="updateButton" type="button" class="btn btn-success mt-3" disabled>Actualizar</button>
+                </form>
               </div>
             </div>
           </div>
@@ -93,32 +112,121 @@
   </div>
 
   <script>
-    // Filtrar personas en la lista
-    document.getElementById('searchInput').addEventListener('input', function () {
-      const filter = this.value.toLowerCase(); // Obtiene el texto ingresado en minúsculas
-      const items = document.querySelectorAll('#resultsList li'); // Selecciona todos los elementos de la lista
+    const resultsList = document.getElementById('resultsList');
+    const searchInput = document.getElementById('searchInput');
+    const searchButton = document.getElementById('searchButton');
+    const updateButton = document.getElementById('updateButton');
+    const updateForm = document.getElementById('updateForm');
 
-      items.forEach(item => {
-        const text = item.querySelector('span').textContent.toLowerCase(); // Obtiene el texto del elemento
-        item.style.display = text.includes(filter) ? '' : 'none'; // Muestra u oculta el elemento según el filtro
-      });
+    const detailElements = {
+      cc: document.getElementById('detail-cc'),
+      nombre: document.getElementById('detail-nombre'),
+      telefono: document.getElementById('detail-telefono'),
+      direccion: document.getElementById('detail-direccion'),
+      correo: document.getElementById('detail-correo'),
+    };
+
+    let selectedPersonDni = null; // Guardar el DNI de la persona seleccionada
+
+    // Filtrar lista de personas al hacer clic en "Buscar"
+    searchButton.addEventListener('click', function () {
+      const query = searchInput.value.trim();
+
+      // Realizar una solicitud al backend para obtener los resultados filtrados
+      fetch(`/filter-people/?query=${query}`)
+        .then(response => response.json())
+        .then(data => {
+          // Limpiar la lista actual
+          resultsList.innerHTML = "";
+
+          // Agregar los nuevos resultados a la lista
+          data.people.forEach(person => {
+            const li = document.createElement("li");
+            li.className = "list-group-item d-flex justify-content-between align-items-center";
+            li.innerHTML = `
+              <span>${person.dni} - ${person.name}</span>
+              <button class="btn btn-sm btn-outline-primary"
+                      onclick="mostrarDetalles(this)"
+                      data-dni="${person.dni}"
+                      data-name="${person.name}"
+                      data-phone="${person.phoneNumber}"
+                      data-address="${person.address}"
+                      data-email="${person.email}">
+                Ver
+              </button>
+            `;
+            resultsList.appendChild(li);
+          });
+        })
+        .catch(error => {
+          console.error("Error al filtrar personas:", error);
+        });
     });
 
     // Mostrar detalles de la persona
-    function viewPerson(dni) {
-      fetch(`/get-person/${dni}/`)
+    function mostrarDetalles(button) {
+      const persona = {
+        dni: button.getAttribute('data-dni'),
+        name: button.getAttribute('data-name'),
+        phoneNumber: button.getAttribute('data-phone'),
+        address: button.getAttribute('data-address'),
+        email: button.getAttribute('data-email'),
+      };
+
+      // Habilitar los campos de texto y el botón de actualizar
+      Object.values(detailElements).forEach(input => input.disabled = false);
+      updateButton.disabled = false;
+
+      // Guardar el DNI de la persona seleccionada
+      selectedPersonDni = persona.dni;
+
+      // Rellenar los campos con la información de la persona
+      detailElements.cc.value = persona.dni;
+      detailElements.nombre.value = persona.name;
+      detailElements.telefono.value = persona.phoneNumber;
+      detailElements.direccion.value = persona.address;
+      detailElements.correo.value = persona.email;
+    }
+
+    // Actualizar la información de la persona
+    updateButton.addEventListener('click', function () {
+      if (!selectedPersonDni) {
+        alert("Por favor, seleccione una persona primero.");
+        return;
+      }
+
+      const formData = new FormData(updateForm);
+
+      // Enviar los datos actualizados al backend
+      fetch(`/update-person/`, {
+        method: "POST",
+        headers: {
+          "X-CSRFToken": "{{ csrf_token }}", // Asegúrate de incluir el token CSRF
+        },
+        body: formData,
+      })
         .then(response => response.json())
         .then(data => {
-          document.getElementById('detail-cc').textContent = data.dni;
-          document.getElementById('detail-nombre').textContent = data.name;
-          document.getElementById('detail-telefono').textContent = data.phoneNumber;
-          document.getElementById('detail-direccion').textContent = data.address;
-          document.getElementById('detail-correo').textContent = data.email;
+          if (data.success) {
+            alert("Persona actualizada correctamente.");
+
+            // Actualizar los campos de texto con los datos actualizados
+            detailElements.cc.value = data.person.dni;
+            detailElements.nombre.value = data.person.name;
+            detailElements.telefono.value = data.person.phoneNumber;
+            detailElements.direccion.value = data.person.address;
+            detailElements.correo.value = data.person.email;
+
+            // Actualizar la lista
+            searchButton.click();
+          } else {
+            alert("Error al actualizar la persona: " + data.error);
+          }
         })
         .catch(error => {
-          console.error('Error:', error);
+          console.error("Error al actualizar la persona:", error);
         });
-    }
+    });
   </script>
 </body>
 

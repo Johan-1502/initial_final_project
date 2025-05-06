@@ -1,6 +1,8 @@
 from .models import Person
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 
 
 def createPerson(request):
@@ -64,3 +66,27 @@ def getPersonById(dni):
         return Person.objects.get(dni=dni)  # Busca la persona por su DNI
     except Person.DoesNotExist:
         raise Person.DoesNotExist(f"No se encontró una persona con el DNI {dni}")
+
+
+@csrf_exempt
+def update_person(request):
+    if request.method == "POST":
+        try:
+            data = request.POST  # Cambiado para manejar datos enviados como FormData
+            person = Person.objects.get(dni=data["dni"])  # Buscar la persona por su DNI
+            person.name = data["name"]
+            person.phoneNumber = data["phoneNumber"]
+            person.address = data["address"]
+            person.email = data["email"]
+            person.save()  # Guardar los cambios en la base de datos
+            return JsonResponse({"success": True, "person": {
+                "dni": person.dni,
+                "name": person.name,
+                "phoneNumber": person.phoneNumber,
+                "address": person.address,
+                "email": person.email,
+            }})
+        except Person.DoesNotExist:
+            return JsonResponse({"success": False, "error": "Persona no encontrada"})
+        except Exception as e:
+            return JsonResponse({"success": False, "error": str(e)})
