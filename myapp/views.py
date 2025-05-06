@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from .forms import InputPersonData, SearchPerson
 from . import services
 
@@ -29,41 +29,34 @@ def search_person(request):
 
 def show_people(request):
     people = services.getAllPeople()
+    return render(request, "people.html", {"people": people})
+
+
+def delete_person(request, id):
+    services.deletePerson(id)
+    people = services.getAllPeople()
     return render(request, "show_people.html", {"people": people})
-
-
-def delete_person(request):
-    if request.method == "GET":
-        return render(request, "delete_person.html", {"form": SearchPerson()})
-    else:
-        services.deletePerson(request.POST["dni"])
-        people = services.getAllPeople()
-        return render(request, "show_people.html", {"people": people})
 
 
 def edit_person(request):
     if request.method == "GET":
-        return render(request, "edit_person.html", {"form": SearchPerson()})
-    else:
-        people = services.searchPerson(request.POST["dni"])
+        people = services.getAllPeople()  # Obtiene todas las personas
+        return render(request, "edite-people.html", {"people": people})
 
-        person = people.first()
 
-        return render(
-            request,
-            "modify_person.html",
-            {
-                "form": InputPersonData(
-                    initial={
-                        "name": person.name,
-                        "dni": person.dni,
-                        "phoneNumber": person.phoneNumber,
-                        "address": person.address,
-                        "email": person.email,
-                    }
-                )
-            },
-        )
+def get_person(request, dni):
+    try:
+        person = services.getPersonById(dni)  # Obtiene la persona por DNI
+        data = {
+            "name": person.name,
+            "dni": person.dni,
+            "phoneNumber": person.phoneNumber,
+            "address": person.address,
+            "email": person.email,
+        }
+        return JsonResponse(data)
+    except Person.DoesNotExist:
+        return JsonResponse({"error": "Persona no encontrada"}, status=404)
 
 
 def confirm_changes(request):
