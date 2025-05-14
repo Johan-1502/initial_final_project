@@ -1,0 +1,109 @@
+{% extends 'header-side.html' %}
+
+{% block content %}
+
+      <!-- Panel de contenido(Principal) -->
+      <div class="content-panel d-flex w-100 h-100 align-items-center justify-content-center">
+        <div class="container w-100 h-100">
+          {% include "message_container.html" %}
+          <!-- Contenedor cabecera de contenido -->
+          <div class="row">
+            <div class="mb-3">
+              <button type="button" id="before-button" class="btn btn-outline-secondary btn-back" onclick="window.history.back()">
+                <i class="fa-solid fa-chevron-left fa-beat"></i>
+              </button>
+            </div>
+            <h2 class="text-center col-md-12 align-center">Gestionar Personas</h2>
+          </div>
+
+          <div class="row col-md-12">
+            <!-- Contenedor boton nuevo -->
+            <div id="button-container" class="col-md-12 d-flex justify-content-end mt-3 mt-md-0">
+              <button id="activateCreateButton" type="submit" class="btn-plus btn btn-success special-button green">
+                <p><i class="fa-solid fa-plus"></i>Añadir</p></button>
+            </div>
+          </div>
+
+          <!--Fila principal de contenido-->
+          <div class="row col-md-12 mt-3">
+
+            <!--Contenedor de busqueda-->
+            <div id="search-container" class="col-md-12 align-items-center">
+
+              <!-- Campo de búsqueda -->
+              <form method="POST">
+                {% csrf_token %}
+                <label for="searchInput" class="form-label fw-bold">Buscar por CC o por Nombre</label>
+                <input id="searchInput" name="dni" type="text" class="form-control special-form"
+                        placeholder="Escribe un nombre o cédula..." style="height: 4em;">
+                  
+              </form>
+              <!-- Lista de resultados de busqueda -->
+              <ul id="resultsList" class="list-group">
+                {% for person in people %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                  <span>{{ person.dni }} - {{ person.name }}</span>
+                  <button class="btn btn-sm btn-outline-primary view-button"
+                        onclick="showDetails(this)"
+                          data-dni="{{ person.dni }}"
+                          data-name="{{ person.name }}"
+                          data-phone="{{ person.phoneNumber }}"
+                          data-address="{{ person.address }}"
+                          data-email="{{ person.email }}">
+                    <i class="fa-solid fa-eye"></i>Ver
+                  </button>
+                </li>
+                {% endfor %}
+              </ul>
+            </div>
+
+            <!--Contenedor de detalles-->
+            <div id="detail-container" class="col-md-6 opacity-0">
+
+              <!-- Panel de detalles para editar y eliminar -->
+              <div class="edit-delete-person-section d-none w-100 content-section">
+                <h5 class="fw-bold">Información de la Persona seleccionada</h5>
+                <div id="personInformation">
+                  <form id="changeForm" method="POST">
+                  {% include "info_people_section.html" with prefix="change" %}
+                    <div class="d-flex justify-content-center mt-3 mt-md-0  w-100">
+                      <button id="update-button" type="submit" class="btn-pencil btn btn-success special-button  mt-3 blue">
+                        <p><i class="fa-solid fa-pencil"></i>Actualizar</p></button>
+                      <button id="delete-button" type="submit" class="btn-trash btn btn-danger special-button  mt-3 red" style="weight:70%;">
+                        <p><i class="fa-solid fa-trash"></i>Eliminar</p></button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+
+              <!-- Panel de detalles para registrar -->
+              <div class="create-person-section d-none w-100 content-section">
+                <h5 class="fw-bold">Registrar una nueva Persona</h5>
+                <div id="personInformation">
+                  <form action="{% url 'manage_people' %}" id="createForm" method="POST">
+                    <input type="hidden" name="form_type" value="create_person">
+                    {% include "info_people_section.html" with prefix="create" %}
+                    <div class="justify-content-center w-100 mt-3 mt-md-0 d-flex">
+                      <button id="createButton" type="submit" class="btn-user-plus btn btn-success mt-3 special-button green">
+                        <p><i class="fa-solid fa-plus"></i>Registrar</p></button>
+                    </div
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+  setTimeout(function () {
+    let alerts = document.querySelectorAll('.alert');
+    alerts.forEach(alert => {
+      alert.classList.add('d-none');
+    });
+  }, 4000); // 4 segundos
+</script>
+
+
+{% endblock %}
