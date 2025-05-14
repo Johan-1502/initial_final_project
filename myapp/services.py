@@ -25,13 +25,6 @@ def createPerson(request):
     except Exception as e:
         raise e
 
-
-
-def searchPerson(infoToFilter):
-    people = Person.objects.filter(dni__icontains=infoToFilter) | Person.objects.filter(name__icontains=infoToFilter)
-    return people.distinct()
-
-
 def getAllPeople():
     return Person.objects.filter(isVisible=True)
 
