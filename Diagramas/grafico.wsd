@@ -1,0 +1,126 @@
+@startuml eventsManager
+
+Class Person{
+    String name
+    String dni
+    String phoneNumber
+    String address
+    String email
+    IRole[] roles
+    IRole currentRole
+
+}
+
+Class Event{
+    HashMap<Person, Integer> employees
+    Place place
+    Date startDate
+    Date endDate
+    TypeEvent type
+    String name
+    Person client
+}
+
+Class Place{
+    String city
+    String address
+    String name
+}
+
+Class TypeEvent{
+    String type
+}
+
+Interface IRole{}
+
+Class ClientRole{
+}
+
+Abstract class EmployeeRole{
+
+}
+
+Class RoleCook{}
+Class RoleSecurity{}
+Class RoleWaiter{}
+Class RoleEntertainment{}
+
+
+
+Abstract Class Report{
+    String name
+    String description
+    Date date
+    Abstract Report generateReport()
+}
+
+Class LaboralReport{
+    Person person
+}
+
+
+Class ReportEvent{
+    Event event
+}
+
+Class ManagerEvent{
+    Event[] events
+    Person[] persons
+    Place[] places
+    TypeEvent[] typesEvents
+    HashMap<String, Event[]> historyEvents
+
+    void createPerson(Person person)
+    void deletePerson(Person person)
+    void updatePerson(Person person)
+    void createEvent(Event event)
+    void deleteEvent(Event event)
+    void updateEvent(Event event)
+    void createReport(Report report)
+    void createPlace(Place place)
+    void deletePlace(Place place)
+    void updatePlace(Place place)
+    void createTypeEvent(TypeEvent typeEvent)
+    void deleteTypeEvent(TypeEvent typeEvent)
+    void updateTypeEvent(TypeEvent typeEvent)
+    Event[] searchEvent(String name)
+    Event[] filterByTypeEvent(TypeEvent typeEvent)
+    Event[] filterByDate(Date startDate, Date endDate)
+
+}
+
+
+Interface Prototype<T>{
+    T clone()
+}
+
+
+Prototype <|.. Person
+
+Person --> IRole
+
+Person o-- IRole
+
+LaboralReport --|> Report
+ReportEvent --|> Report
+
+Event --o ManagerEvent
+Report --o ManagerEvent
+Person --o ManagerEvent
+Place --o ManagerEvent
+Person --o ManagerEvent
+TypeEvent --o ManagerEvent
+
+ClientRole ..|>IRole
+EmployeeRole ..|>IRole
+
+RoleEntertainment --|> EmployeeRole
+RoleCook --|> EmployeeRole
+RoleSecurity --|> EmployeeRole
+RoleWaiter --|> EmployeeRole
+
+TypeEvent --o Event
+
+Place --o Event
+
+@enduml
