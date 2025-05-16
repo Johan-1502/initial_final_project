@@ -25,13 +25,6 @@ def createPerson(request):
     except Exception as e:
         raise e
 
-
-
-def searchPerson(infoToFilter):
-    people = Person.objects.filter(dni__icontains=infoToFilter) | Person.objects.filter(name__icontains=infoToFilter)
-    return people.distinct()
-
-
 def getAllPeople():
     return Person.objects.filter(isVisible=True)
 
@@ -48,7 +41,6 @@ def editPerson(request):
     try:
         person = Person.objects.get(dni=request.POST["dni"])
         person.name = request.POST["name"]
-        person.dni = request.POST["dni"]
         person.phoneNumber = request.POST["phoneNumber"]
         person.address = request.POST["address"]
         person.email = request.POST["email"]
@@ -61,6 +53,8 @@ def editPerson(request):
     except Exception as e:
         raise e
 
+def filter_people_by(**kwargs):
+    return Person.objects.filter(**kwargs)
 
 def getPersonById(dni):
     try:
@@ -68,26 +62,3 @@ def getPersonById(dni):
     except Person.DoesNotExist:
         raise Person.DoesNotExist(f"No se encontró una persona con el DNI {dni}")
 
-
-@csrf_exempt
-def update_person(request):
-    if request.method == "POST":
-        try:
-            data = request.POST  # Cambiado para manejar datos enviados como FormData
-            person = Person.objects.get(dni=data["dni"])  # Buscar la persona por su DNI
-            person.name = data["name"]
-            person.phoneNumber = data["phoneNumber"]
-            person.address = data["address"]
-            person.email = data["email"]
-            person.save()  # Guardar los cambios en la base de datos
-            return JsonResponse({"success": True, "person": {
-                "dni": person.dni,
-                "name": person.name,
-                "phoneNumber": person.phoneNumber,
-                "address": person.address,
-                "email": person.email,
-            }})
-        except Person.DoesNotExist:
-            return JsonResponse({"success": False, "error": "Persona no encontrada"})
-        except Exception as e:
-            return JsonResponse({"success": False, "error": str(e)})
