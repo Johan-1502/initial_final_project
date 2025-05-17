@@ -1,0 +1,24 @@
+{% csrf_token %}
+<label id="{{ prefix }}-label-id" for="{{ prefix }}-detail-id" style="display: inline;"><strong>id:</strong></label>
+<input id="{{ prefix }}-detail-id" name="id" type="text" class="control-form form-control mb-2" readonly required>
+
+<label for="{{ prefix }}-detail-nombre"><strong>Nombre:</strong></label>
+<input id="{{ prefix }}-detail-nombre" name="name" type="text" "
+    title="Solo puede contener letras y espacios (ej: Juan Jose)" class="control-form form-control mb-2" required>
+
+<label for="{{ prefix }}-detail-fecha-inicio"><strong>Fecha de inicio:</strong></label>
+<input id="{{ prefix }}-detail-fecha-inicio" name="startDate" type="date" class="control-form form-control mb-2"
+    required>
+
+<label for="{{ prefix }}-detail-fecha-fin"><strong>Fecha finalizacion:</strong></label>
+<input id="{{ prefix }}-detail-fecha-fin" name="endDate" type="date" class="control-form form-control mb-2" required>
+
+<label for="{{ prefix }}-selectPlace"><strong>Lugar:</strong></label>
+<select id="{{ prefix }}-selectPlace" name="place" class="control-form form-control mb-2"></select>
+
+<label for="{{ prefix }}-selectType"><strong>Tipo:</strong></label>
+<select id="{{ prefix }}-selectType" name="typeEvent" class="control-form form-control mb-2"></select>
+
+<label for="{{ prefix }}-detail-client"><strong>Cliente:</strong></label>
+<select id="{{ prefix }}-detail-client" name="client" class="control-form form-control mb-2"
+    style="pointer-events: none;" required> </select>

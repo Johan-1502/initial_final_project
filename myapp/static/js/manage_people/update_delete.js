@@ -51,6 +51,7 @@ export function setupDelete(deleteButton, changeForm, csrfToken) {
     });
   });
 }
+
 export function showMessage(message, type = "success") {
   const container = document.querySelector(".messages");
   if (!container) return;

@@ -7,8 +7,7 @@ Class Person{
     String address
     String email
     IRole[] roles
-    IRole currentRole
-
+    //IRole currentRole
 }
 
 Class Event{

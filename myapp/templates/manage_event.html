@@ -1,4 +1,4 @@
-{% extends 'header-people.html' %}
+{% extends 'header-event.html' %}
 
 {% block content %}
 
@@ -13,7 +13,7 @@
                 <i class="fa-solid fa-chevron-left fa-beat"></i>
               </button>
             </div>
-            <h2 class="text-center col-md-12 align-center">Gestionar Personas</h2>
+            <h2 class="text-center col-md-12 align-center">Gestionar Eventos</h2>
           </div>
 
           <div class="row col-md-12">
@@ -33,23 +33,27 @@
               <!-- Campo de búsqueda -->
               <form method="POST">
                 {% csrf_token %}
-                <label for="searchInput" class="form-label fw-bold">Buscar por CC o por Nombre</label>
+                <label for="searchInput" class="form-label fw-bold">Buscar evento</label>
                 <input id="searchInput" name="dni" type="text" class="form-control special-form"
-                        placeholder="Escribe un nombre o cédula..." style="height: 4em;">
+                        placeholder="Escribe un nombre de evento" style="height: 4em;">
                   
               </form>
               <!-- Lista de resultados de busqueda -->
               <ul id="resultsList" class="list-group">
-                {% for person in people %}
+                {% for event in events %}
                 <li class="list-group-item d-flex justify-content-between align-items-center">
-                  <span>{{ person.dni }} - {{ person.name }}</span>
+                  <span>{{ event.name }}</span>
                   <button class="btn btn-sm btn-outline-primary view-button"
-                        onclick="showDetails(this)"
-                          data-dni="{{ person.dni }}"
-                          data-name="{{ person.name }}"
-                          data-phone="{{ person.phoneNumber }}"
-                          data-address="{{ person.address }}"
-                          data-email="{{ person.email }}">
+                        onclick="showEventDetails(this)"
+                        data-id="{{ event.id }}"
+                        data-start-date="{{ event.startDate|date:'Y-m-d' }}"
+                        data-end-date="{{ event.endDate|date:'Y-m-d' }}"
+                        data-place="{{ event.place.name }}"
+                        data-type="{{ event.typeEvent.type }}"
+                        data-place-id="{{ event.place.id }}"
+                        data-type-id="{{ event.typeEvent.id }}"
+                        data-client="{{ event.client.name }}"
+                        data-name="{{ event.name }}">
                     <i class="fa-solid fa-eye"></i>Ver
                   </button>
                 </li>
@@ -62,10 +66,10 @@
 
               <!-- Panel de detalles para editar y eliminar -->
               <div class="edit-delete-person-section d-none w-100 content-section">
-                <h5 class="fw-bold">Información de la Persona seleccionada</h5>
+                <h5 class="fw-bold">Información del evento seleccionado</h5>
                 <div id="personInformation">
                   <form id="changeForm" method="POST">
-                  {% include "info_people_section.html" with prefix="change" %}
+                  {% include "info_event_section.html" with prefix="change" %}
                     <div class="d-flex justify-content-center mt-3 mt-md-0  w-100">
                       <button id="update-button" type="submit" class="btn-pencil btn btn-success special-button  mt-3 blue">
                         <p><i class="fa-solid fa-pencil"></i>Actualizar</p></button>
@@ -78,11 +82,11 @@
 
               <!-- Panel de detalles para registrar -->
               <div class="create-person-section d-none w-100 content-section">
-                <h5 class="fw-bold">Registrar una nueva Persona</h5>
+                <h5 class="fw-bold">Registrar una nuevo evento</h5>
                 <div id="personInformation">
-                  <form action="{% url 'manage_people' %}" id="createForm" method="POST">
+                  <form action="{% url 'manage_event' %}" id="createForm" method="POST">
                     <input type="hidden" name="form_type" value="create_person">
-                    {% include "info_people_section.html" with prefix="create" %}
+                    {% include "info_event_section.html" with prefix="create" %}
                     <div class="justify-content-center w-100 mt-3 mt-md-0 d-flex">
                       <button id="createButton" type="submit" class="btn-user-plus btn btn-success mt-3 special-button green">
                         <p><i class="fa-solid fa-plus"></i>Registrar</p></button>
