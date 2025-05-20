@@ -1,0 +1,17 @@
+{% csrf_token %}
+<label for="{{ prefix }}-person-detail-cc"><strong>CC:</strong></label>
+<input id="{{ prefix }}-person-detail-cc" name="dni" type="number" class="control-form form-control mb-2" required>
+  
+<label for="{{ prefix }}-person-detail-nombre"><strong>Nombre:</strong></label>
+<input id="{{ prefix }}-person-detail-nombre" name="name" type="text" pattern="[A-Za-záéíóúÁÉÍÓÚñÑ\s]+" title="Solo puede contener letras y espacios (ej: Juan Jose)" class="control-form form-control mb-2" required>
+
+  
+<label for="{{ prefix }}-person-detail-telefono"><strong>Teléfono:</strong></label>
+<input id="{{ prefix }}-person-detail-telefono" name="phoneNumber" type="number" class="control-form form-control mb-2" required>
+  
+<label for="{{ prefix }}-person-detail-direccion"><strong>Dirección:</strong></label>
+<input id="{{ prefix }}-person-detail-direccion" name="address" type="text" class="control-form form-control mb-2" required>
+  
+<label for="{{ prefix }}-person-detail-correo"><strong>Correo:</strong></label>
+<input id="{{ prefix }}-person-detail-correo" name="email" pattern="^[^@]+@[^@]+\.[^@]+$" title="Ingresa un correo válido con un punto después del arroba (ej: nombre@dominio.com)" class="control-form form-control mb-2" required>
+  

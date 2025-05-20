@@ -1,0 +1,22 @@
+<div class="side-panel bg-light p-3 col-md-2 col-lg-2" style="position: fixed">
+    <div class="d-grid gap-2">
+        <a href="{% url 'index' %}">
+            <button type="button" class="btn btn-menu btn-light text-start">
+                <i class="bi bi-house me-2"></i>Home
+            </button>
+        </a>
+        <a href="{% url 'manage_event' %}">
+            <button type="button" class="btn btn-menu btn-light text-start">
+                <i class="bi bi-calendar-event me-2"></i>Eventos
+            </button>
+        </a>
+        <a href="{% url 'manage_people' %}">
+            <button type="button" class="btn btn-menu btn-light text-start">
+                <i class="bi bi-people me-2"></i>Personas
+            </button>
+        </a>
+        <button type="button" class="btn btn-menu btn-light text-start">
+            <i class="bi bi-file-earmark-text me-2"></i>Informes
+        </button>
+    </div>
+</div>
