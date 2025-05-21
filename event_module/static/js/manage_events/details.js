@@ -1,6 +1,6 @@
 export let selectedEventName = null;
 
-export function showDetails(button, detailElementsChange, searchContainer, detailContainer, buttonContainer, selectEmployeesButton, popUp) {
+export function showDetails(button, detailElementsChange, searchContainer, detailContainer, buttonContainer) {
   console.log(button.getAttribute("data-date"));
   
   const event = {
@@ -22,7 +22,7 @@ export function showDetails(button, detailElementsChange, searchContainer, detai
     detailContainer.classList.add('opacity-0');
     buttonContainer.classList.add('opacity-100');
     buttonContainer.classList.remove('opacity-0');
-    document.querySelector('.edit-delete-person-section').classList.add('d-none');
+    document.querySelector('.edit-delete-event-section').classList.add('d-none');
     document.querySelector('.create-event-section').classList.add('d-none');
     window.selectedEventName = null;
   } else {
@@ -108,8 +108,7 @@ export function showDetails(button, detailElementsChange, searchContainer, detai
     buttonContainer.classList.add('opacity-100');
     buttonContainer.classList.remove('opacity-0');
     document.querySelector('.create-event-section').classList.add('d-none');
-    document.querySelector('.edit-delete-person-section').classList.remove('d-none');
-    document.querySelector('.create-person-section').classList.add('d-none');
+    document.querySelector('.edit-delete-event-section').classList.remove('d-none');
   }
 
 }
@@ -119,15 +118,20 @@ export function addEmployeeToSelectedList(button) {
   const dni = button.getAttribute('data-dni');
   const name = button.getAttribute('data-name');
   const searchPeopleContainer = document.getElementById("search-people-container");
-  activatePeopleCreateButton.classList.add("opacity-100");
-  activatePeopleCreateButton.classList.remove("opacity-0");
+  const desactivatePeopleCreateButton = document.getElementById("desactivatePeopleCreateButton");
+  const activatePeopleCreateButton = document.getElementById("activatePeopleCreateButton");
+  desactivatePeopleCreateButton.classList.add("d-none");
+  activatePeopleCreateButton.classList.remove("d-none");
   const ul = document.getElementById('selected-employees-list');
   const exists = Array.from(ul.querySelectorAll('li span')).some(span => {
     return span.textContent.startsWith(`${dni} -`);
   });
   if (exists) {
-    // Puedes mostrar un mensaje si quieres
     document.querySelector('.selected_employees_list').classList.remove('d-none');
+    document.querySelector('.selected_employees_list').classList.add('col-md-6');
+    const searchPeopleContainer = document.getElementById("search-people-container");
+    searchPeopleContainer.classList.add('col-md-6');
+    searchPeopleContainer.classList.remove('col-md-12');
     document.querySelector('.create-person-section').classList.add('d-none');
     alert('Esta persona ya ha sido añadida.');
     return;
@@ -146,7 +150,7 @@ export function addEmployeeToSelectedList(button) {
   // Crea el select vacío
   const select = document.createElement('select');
   select.name = "typeEvent";
-  select.className = "control-form form-control mb-2";
+  select.className = "little-form mb-2";
 
   // Llenar el select automáticamente con los roles
   fetch('/manage_event/roles/')
@@ -162,11 +166,12 @@ export function addEmployeeToSelectedList(button) {
     .catch(error => {
       console.error("Error al cargar roles:", error);
     });
-
+  
+  
   // Botón para eliminar persona de la lista
   const deleteBtn = document.createElement('button');
   deleteBtn.type = "button";
-  deleteBtn.className = "btn btn-outline-danger ms-2";
+  deleteBtn.className = "delete-btn";
   deleteBtn.innerHTML = `<i class="fa-solid fa-xmark fa-beat"></i>`;
   deleteBtn.onclick = function() {
     li.remove();

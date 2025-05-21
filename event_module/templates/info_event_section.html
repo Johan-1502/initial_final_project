@@ -13,12 +13,13 @@
 <input id="{{ prefix }}-detail-fecha-fin" name="endDate" type="date" class="control-form form-control mb-2" required>
 
 <label for="{{ prefix }}-selectPlace"><strong>Lugar:</strong></label>
-<select id="{{ prefix }}-selectPlace" name="place" class="control-form form-control mb-2"></select>
+<select id="{{ prefix }}-selectPlace" name="place" class="control-form form-control mb-2" required></select>
 
 <label for="{{ prefix }}-selectType"><strong>Tipo:</strong></label>
-<select id="{{ prefix }}-selectType" name="typeEvent" class="control-form form-control mb-2"></select>
+<select id="{{ prefix }}-selectType" name="typeEvent" class="control-form form-control mb-2" required></select>
 
 <label for="{{ prefix }}-detail-client"><strong>Cliente:</strong></label>
 <select id="{{ prefix }}-detail-client" type="button" name="client" class="control-form form-control mb-2"
     required> Seleccionar cliente</select>
-<button id="" type="button" name="client" class="pop-up-detail-employees control-form form-control mb-2" required> Seleccionar empleados</button>
+<label><strong>Empleados:</strong></label>
+<button id="" type="button" name="client" class="pop-up-detail-employees control-form form-control mb-2" required> Ver empleados seleccionados</button>

@@ -23,11 +23,11 @@ window.addEventListener('DOMContentLoaded', () => {
   const activatePeopleCreateButton = document.getElementById("activatePeopleCreateButton");
   const buttonContainer = document.getElementById("event-button-container");
   const searchContainer = document.getElementById("search-container");
-  
+  const desactivatePeopleCreateButton = document.getElementById("desactivatePeopleCreateButton");
   const detailContainer = document.getElementById("detail-container");
   const deleteButton = document.getElementById("delete-button");
   const selectEmployeeButtons = document.querySelectorAll('.pop-up-detail-employees');
-  const popUp = document.getElementById("pop-up");
+  const popUp = document.getElementById("pop-up-main");
   const closePopUp = document.getElementById("close-pop-up");
 
   const detailElementsCreate = {
@@ -83,7 +83,7 @@ window.addEventListener('DOMContentLoaded', () => {
   const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
   setupSearch(resultsList, searchInput, searchPersonInput, resultPersonList);
-  setupCreate(activateCreateButton, detailElementsCreate, searchContainer, buttonContainer, detailContainer, activatePeopleCreateButton, detailPersonElementsCreate, resultPersonList);
+  setupCreate(activateCreateButton, desactivatePeopleCreateButton, detailElementsCreate, searchContainer, buttonContainer, detailContainer, activatePeopleCreateButton, detailPersonElementsCreate, resultPersonList);
   setupUpdate(updateButton, changeForm, detailElementsChange, csrfToken);
   setupDelete(deleteButton, changeForm, csrfToken);
 });

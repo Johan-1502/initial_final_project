@@ -1,7 +1,7 @@
 
-  export function setupCreate(activateCreateButton, detailElementsCreate, searchContainer, buttonContainer, detailContainer, activatePeopleCreateButton, detailPersonElementsCreate, resultPersonList) {
+  export function setupCreate(activateCreateButton, desactivatePeopleCreateButton, detailElementsCreate, searchContainer, buttonContainer, detailContainer, activatePeopleCreateButton, detailPersonElementsCreate, resultPersonList) {
     activateCreateButton.addEventListener('click', function () {
-      document.querySelector('.edit-delete-person-section').classList.add('d-none');
+      document.querySelector('.edit-delete-event-section').classList.add('d-none');
       document.querySelector('.create-event-section').classList.remove('d-none');
       detailElementsCreate.selectPlace.innerHTML = "";
       detailElementsCreate.selectType.innerHTML = "";
@@ -60,16 +60,14 @@
           console.error("Error al filtrar eventos:", error);
         });
 
-      // Limpia el select antes de agregar las opciones
       detailElementsCreate.client.innerHTML = "";
 
-      // Llenar el select con todas las personas registradas
       fetch('/manage_event/people/')
         .then(response => response.json())
         .then(data => {
           data.people.forEach(person => {
             const option = document.createElement("option");
-            option.value = person.id; // Usa .id si tu endpoint lo devuelve, o .dni si solo tienes dni
+            option.value = person.id;
             option.textContent = person.name;
             detailElementsCreate.client.appendChild(option);
           });
@@ -88,6 +86,7 @@
       
     });
     activatePeopleCreateButton.addEventListener('click', function() {
+      
       document.querySelector('.selected_employees_list').classList.add('d-none');
       document.querySelector('.create-person-section').classList.remove('d-none');
       document.querySelector('.create-person-section').classList.add('col-md-6');
@@ -97,14 +96,33 @@
       detailPersonElementsCreate.telefono.value = "";
       detailPersonElementsCreate.direccion.value = "";
       detailPersonElementsCreate.correo.value = "";
-      activatePeopleCreateButton.classList.remove("opacity-100");
-      activatePeopleCreateButton.classList.add("opacity-0");
+      activatePeopleCreateButton.classList.add("d-none");
+      desactivatePeopleCreateButton.classList.remove("d-none");
       
       const searchPeopleContainer = document.getElementById("search-people-container");
       searchPeopleContainer.classList.remove('col-md-12');
       searchPeopleContainer.classList.add('col-md-6');
       detailContainer.classList.remove('opacity-0');
       detailContainer.classList.add('opacity-100');
+      window.selectedPersonDni = null;
+    });
+
+    desactivatePeopleCreateButton.addEventListener('click', function() {
+      document.querySelector('.selected_employees_list').classList.add('d-none');
+      document.querySelector('.create-person-section').classList.add('d-none');
+      document.querySelector('.create-person-section').classList.add('col-md-0');
+      detailPersonElementsCreate.cc.readOnly = false;
+      detailPersonElementsCreate.cc.value = "";
+      detailPersonElementsCreate.nombre.value = "";
+      detailPersonElementsCreate.telefono.value = "";
+      detailPersonElementsCreate.direccion.value = "";
+      detailPersonElementsCreate.correo.value = "";
+      activatePeopleCreateButton.classList.remove("d-none");
+      desactivatePeopleCreateButton.classList.add("d-none");
+      
+      const searchPeopleContainer = document.getElementById("search-people-container");
+      searchPeopleContainer.classList.remove('col-md-6');
+      searchPeopleContainer.classList.add('col-md-12');
       window.selectedPersonDni = null;
     });
     const formPersona = document.getElementById('createPersonForm');
@@ -165,7 +183,7 @@
                       data-phone="${person.phoneNumber}"
                       data-address="${person.address}"
                       data-email="${person.email}">
-                Añadir
+                Seleccionar
               </button>
             `;
             resultPersonList.appendChild(li);

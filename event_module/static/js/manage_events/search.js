@@ -44,7 +44,7 @@ export function setupSearch(resultsList, searchInput, searchPersonInput, resultP
                     data-phone="${person.phoneNumber}"
                     data-address="${person.address}"
                     data-email="${person.email}">
-              Añadir
+              Seleccionar
             </button>
           `;
           resultPersonList.appendChild(li);
