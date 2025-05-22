@@ -229,7 +229,7 @@ select.control-form {
   position: relative;
   transition: all 0.3s ease-in-out;
 }
-#search-people-container,
+.search-people-container,
 #search-container {
   background-color: #f8f9fa;
   padding: 1.5rem 2rem;
@@ -240,7 +240,10 @@ select.control-form {
   transition: all 0.3s ease-in-out;
 }
 
-#pop-up-main{
+#create-client-pop-up-main,
+#edit-client-pop-up-main,
+#create-pop-up-main,
+#edit-pop-up-main{
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
   display: flex;
@@ -252,9 +255,10 @@ select.control-form {
 }
 
 #pop-up-container{
-  padding: 2vh 3vh 10vh 6vh;
+  padding: 2vh 3vh 3vh 6vh;
   background: white; border-radius: 1vw;
-  width: 90%; height: 100%; position:relative
+  width: 90%; height: 90%; 
+  overflow-y: auto; max-height: 100%;
 }
 
 #search-people-container{

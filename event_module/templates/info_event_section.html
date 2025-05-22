@@ -19,7 +19,16 @@
 <select id="{{ prefix }}-selectType" name="typeEvent" class="control-form form-control mb-2" required></select>
 
 <label for="{{ prefix }}-detail-client"><strong>Cliente:</strong></label>
-<select id="{{ prefix }}-detail-client" type="button" name="client" class="control-form form-control mb-2"
-    required> Seleccionar cliente</select>
+<button id="{{ prefix }}-detail-client" type="button" name="client" class="control-form form-control mb-2" required>  
+{% if prefix == "create" %}
+    Seleccionar cliente
+  {% else %}
+    Ver cliente
+  {% endif %}</button>
 <label><strong>Empleados:</strong></label>
-<button id="" type="button" name="client" class="pop-up-detail-employees control-form form-control mb-2" required> Ver empleados seleccionados</button>
+<button id="{{ prefix }}-pop-up-detail-employees" type="button" name="employees" class="control-form form-control mb-2" required> {% if prefix == "create"%}
+    Seleccionar empleados
+  {% else %}
+    Ver empleados seleccionados
+  {% endif %}
+</button>

@@ -16,6 +16,7 @@
 <body>
     <div class="layout-container">
         <!-- Cabecera principal movible -->
+         
         <header class="header col-md-12" style="position:fixed; height:15vh">
 
             <div class="container text-center">
@@ -25,13 +26,18 @@
             </div>
 
         </header>
-
+            
         <!-- Contenido principal -->
         <div class="main-panel d-flex">
-
+            
             <!-- Ventana pop up emergente-->
-            {% include 'pop-up-window.html' %}
-
+            {% include 'pop-up-window.html' with prefix="edit" %}
+            {% include 'pop-up-window.html' with prefix="create" %}
+            {% include 'pop-up-window.html' with prefix="edit-client" %}
+            {% include 'pop-up-window.html' with prefix="create-client" %}
+            <div id="js-messages-container" class="message-main row justify-content-center"
+            style="text-align: center; font-weight: bold; position:fixed; padding-left: 10%; padding-right: 10%; width:100%; margin-top:2vh; z-index: 100;">
+        </div>
             <!-- Barra lateral movible-->
             {% include 'lateral-bar.html' %}
 

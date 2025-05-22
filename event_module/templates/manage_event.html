@@ -1,11 +1,13 @@
 {% extends 'header-event.html' %}
 
 {% block content %}
-
+      
       <!-- Panel de contenido(Principal) -->
       <div class="content-panel d-flex w-100 h-100 align-items-center justify-content-center">
         <div class="container w-100 h-100">
           {% include "message_container.html" %}
+          
+          
           <!-- Contenedor cabecera de contenido -->
           <div class="row">
             <div class="mb-3">
@@ -46,7 +48,7 @@
                 <li class="list-group-item d-flex justify-content-between align-items-center">
                   <span>{{ event.name }}</span>
                   <button class="btn btn-sm btn-outline-primary view-button"
-                        onclick="showEventDetails(this)"
+                        onclick="showEventDetails(this)" 
                         data-id="{{ event.id }}"
                         data-start-date="{{ event.startDate|date:'Y-m-d' }}"
                         data-end-date="{{ event.endDate|date:'Y-m-d' }}"

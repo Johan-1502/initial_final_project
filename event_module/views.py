@@ -15,6 +15,7 @@ def add_employee(request):
         if form_type == "create_person":
             try:
                 person = people_services.createPerson(request)
+                print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
                 return JsonResponse({"success": True, "message": "Persona registrada correctamente."})
             except Exception as e:
                 return JsonResponse({"success": False, "message": "Ocurrió un error al crear la persona: El dni se encuentra asignado a otra persona."})

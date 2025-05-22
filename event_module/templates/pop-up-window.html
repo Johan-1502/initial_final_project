@@ -1,76 +1,114 @@
 {% csrf_token %}
-<div id="pop-up-main" class="d-none pop-up-select_employees">
-                <div id="pop-up-container">
-                    <div class="row col-md-12">
-                        <!-- Contenedor boton nuevo -->
-                        <div class="mb-3 col-md-1">
-                            <button type="button" id="close-pop-up" class="btn btn-outline-secondary btn-back">
-                                <i class="fa-solid fa-xmark fa-beat"></i>
-                            </button>
-                        </div>
-                        <div class="col-md-10">
-                            
-                            <h2 class="text-center align-center">Seleccionar Empleados para el Evento</h2>
-                        </div>
-                        
-                        <div id="people-button-container" class="d-flex justify-content-end mt-3 mt-md-0" style="padding-bottom:4vh">
-                            <button id="activatePeopleCreateButton" type="submit" class="btn-plus btn btn-success special-button green">
-                                <p><i class="fa-solid fa-plus"></i>Añadir</p></button>
-                            <button id="desactivatePeopleCreateButton" type="submit" class="btn-minus btn d-none btn-success special-button white">
-                                <p><i class="fa-solid fa-backward"></i>Volver</p></button>
-                        </div>
-                    </div>
-                    <div class="row col-md-12 d-flex employee-container" style="position: relative; overflow-y: auto; max-height: 70%;">
-                        <div id="search-people-container" class="col-md-12 h-100" >
-                            <!-- Campo de búsqueda -->
-                            <form method="POST">
-                            {% csrf_token %}
-                            <label for="searchPersonInput" class="form-label fw-bold">Buscar por CC o por Nombre</label>
-                            <input id="searchPersonInput" name="dni" type="text" class="form-control special-form"
-                                    placeholder="Escribe un nombre o cédula..." style="height: 4em;">
-                                
-                            </form>
-                            <!-- Lista de resultados de busqueda -->
-                            <ul id="resultPersonList" class="list-group" style="overflow-y: auto; max-height: 300px;">
-                            {% for person in people %}
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <span>{{ person.dni }} - {{ person.name }}</span>
-                                <button class="btn btn-sm btn-outline-primary view-button"
-                                    onclick="addEmployeeToSelectedList(this)"
-                                        data-dni="{{ person.dni }}"
-                                        data-name="{{ person.name }}"
-                                        data-phone="{{ person.phoneNumber }}"
-                                        data-address="{{ person.address }}"
-                                        data-email="{{ person.email }}">
-                                Seleccionar
-                                </button>
-                            </li>
-                            {% endfor %}
-                            </ul>
-                        </div>
-                        <div class="selected_employees_list d-none col-md-0 h-100 content-section">
-                            <h5 class="fw-bold">Empleados seleccionados</h5>
-                            <ul id="selected-employees-list" class="list-group">
-                                <!-- Las filas se agregarán aquí dinámicamente con JS -->
-                            </ul>
-                        </div>
-                        <div class="create-person-section d-none col-md-0 content-section h-100">
-                            <h5 class="fw-bold">Registrar una nueva Persona</h5>
-                            <div id="personInformation">
-                            <form action="{% url 'add_employee' %}" id="createPersonForm" method="POST">
-                                <input type="hidden" name="form_type" value="create_person">
-                                {% include "info_people_section.html" with prefix="create" %}
-                                <div class="justify-content-center w-100 mt-3 mt-md-0 d-flex">
-                                <button id="createButton" type="submit" class="btn-user-plus btn btn-success mt-3 special-button green">
-                                    <p><i class="fa-solid fa-plus"></i>Registrar</p></button>
-                                </div>
-                            </form>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row justify-content-center">
-                        <button id="createButton" type="submit" class="col-md-3 btn-confirm btn btn-success mt-3 special-button blue">
-                            <p><i class="fa-solid fa-check"></i>Confirmar</p></button>
-                        </div>
-                </div>
+<div id="{{ prefix }}-pop-up-main" class="d-none pop-up-select_employees">
+  <div id="pop-up-container">
+    <div class="row col-md-12">
+      <!-- Contenedor botón cerrar -->
+      <div class="mb-3 col-md-1">
+        <button type="button" id="close-{{ prefix }}-pop-up" class="btn btn-outline-secondary btn-back">
+          <i class="fa-solid fa-xmark fa-beat"></i>
+        </button>
+      </div>
+      <div class="col-md-10">
+        <h2 class="text-center align-center">
+          {% if prefix == "edit-client" or prefix == "create-client" %}
+            Seleccionar Cliente para el Evento
+          {% else %}
+            Seleccionar Empleados para el Evento
+          {% endif %}
+        </h2>
+      </div>
+
+      <div id="people-button-container" class="d-flex justify-content-end mt-3 mt-md-0" style="padding-bottom:4vh">
+        <button type="submit" class="activatePeopleCreateButton btn-plus btn btn-success special-button green">
+          <p><i class="fa-solid fa-plus"></i>Añadir</p>
+        </button>
+        <button type="submit" class="desactivatePeopleCreateButton btn-minus btn d-none btn-success special-button white">
+          <p><i class="fa-solid fa-backward"></i>Volver</p>
+        </button>
+      </div>
+    </div>
+
+    <div class="row col-md-12 d-flex employee-container" style="position: relative; overflow-y: auto; max-height: 60%;">
+      <div class="search-people-container col-md-12 h-100">
+        <!-- Campo de búsqueda -->
+        <form method="POST">
+          {% csrf_token %}
+          <label for="searchPersonInput" class="form-label fw-bold">Buscar por CC o por Nombre</label>
+          <input name="dni" type="text" class="searchPersonInput form-control special-form"
+                 placeholder="Escribe un nombre o cédula..." style="height: 4em;">
+        </form>
+
+        <!-- Lista de resultados de búsqueda -->
+        <ul class="list-group resultPersonList" style="overflow-y: auto; max-height: 300px;">
+          {% for person in people %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <span>{{ person.dni }} - {{ person.name }}</span>
+              <button class="btn btn-sm btn-outline-primary view-button"
+                      onclick="addEmployeeToSelectedList(this, {% if prefix == 'edit-client' or prefix == 'create-client' %}true{% else %}false{% endif %})"
+                      data-dni="{{ person.dni }}"
+                      data-name="{{ person.name }}"
+                      data-phone="{{ person.phoneNumber }}"
+                      data-address="{{ person.address }}"
+                      data-email="{{ person.email }}">
+                Seleccionar
+              </button>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+
+      <div class="selected_employees_list d-none col-md-0 h-100 content-section">
+        <h5 class="fw-bold">
+          {% if prefix == "edit-client" or prefix == "create-client" %}
+            Cliente seleccionado
+          {% else %}
+            Empleados seleccionados
+          {% endif %}
+        </h5>
+        <ul class="selected-employees-list list-group">
+          <!-- Las filas se agregarán aquí dinámicamente con JS -->
+        </ul>
+      </div>
+
+      <div class="create-person-section d-none col-md-0 content-section h-100">
+        <h5 class="fw-bold">Registrar y asignar una nueva Persona al evento</h5>
+        <div id="personInformation">
+          <form action="{% url 'add_employee' %}" class="createPersonForm" method="POST">
+            <input type="hidden" name="form_type" value="create_person">
+            
+            <label for="create-detail-cc"><strong>CC:</strong></label>
+            <input name="dni" type="number" class="create-detail-cc control-form form-control mb-2" required>
+
+            <label for="create-detail-nombre"><strong>Nombre:</strong></label>
+            <input name="name" type="text" pattern="[A-Za-záéíóúÁÉÍÓÚñÑ\s]+"
+                   title="Solo puede contener letras y espacios (ej: Juan Jose)"
+                   class="create-detail-nombre control-form form-control mb-2" required>
+
+            <label for="create-detail-telefono"><strong>Teléfono:</strong></label>
+            <input name="phoneNumber" type="number" class="create-detail-telefono control-form form-control mb-2" required>
+
+            <label for="create-detail-direccion"><strong>Dirección:</strong></label>
+            <input name="address" type="text" class="create-detail-direccion control-form form-control mb-2" required>
+
+            <label for="create-detail-correo"><strong>Correo:</strong></label>
+            <input name="email" pattern="^[^@]+@[^@]+\.[^@]+$"
+                   title="Ingresa un correo válido con un punto después del arroba (ej: nombre@dominio.com)"
+                   class="create-detail-correo control-form form-control mb-2" required>
+
+            <div class="justify-content-center w-100 mt-3 mt-md-0 d-flex">
+              <button id="createButton" type="submit" class="btn-user-plus btn btn-success mt-3 special-button green">
+                <p><i class="fa-solid fa-plus"></i>Registrar</p>
+              </button>
             </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="row justify-content-center">
+      <button id="createButton" type="submit" class="col-md-3 btn-confirm btn btn-success mt-3 special-button blue">
+        <p><i class="fa-solid fa-check"></i>Confirmar</p>
+      </button>
+    </div>
+  </div>
+</div>
