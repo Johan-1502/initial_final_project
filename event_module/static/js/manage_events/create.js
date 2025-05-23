@@ -17,7 +17,6 @@ export function setupEventCreate(
 function resetEventCreateForm(detailElementsCreate) {
   document.querySelector('.edit-delete-event-section').classList.add('d-none');
   document.querySelector('.create-event-section').classList.remove('d-none');
-  console.log(detailElementsCreate);
   detailElementsCreate.selectPlace.innerHTML = "";
   detailElementsCreate.selectType.innerHTML = "";
   detailElementsCreate.client.removeAttribute('style');
@@ -81,10 +80,6 @@ export function setupPeopleCreate(
   detailContainer, 
   prefix
 ) {
-  console.log("rootContainer:", rootContainer);
-  console.log("rootContainer.innerHTML:", rootContainer.innerHTML);
-  console.log("CC Element:", rootContainer.querySelector('.create-detail-cc'));
-  
   const resultPersonList = rootContainer.querySelector('.resultPersonList');
   const detailPersonElementsCreate = getDetailPersonElements(rootContainer);
   const activatePeopleCreateButton = rootContainer.querySelector(".activatePeopleCreateButton");
@@ -135,16 +130,21 @@ function setupPeopleCreateEventListeners(
 function activatePeopleCreateMode(rootContainer, detailPersonElementsCreate, activatePeopleCreateButton, desactivatePeopleCreateButton, detailContainer) {
   rootContainer.querySelector('.selected_employees_list').classList.add('d-none');
   rootContainer.querySelector('.create-person-section').classList.remove('d-none');
-  rootContainer.querySelector('.create-person-section').classList.add('col-md-6');
+  rootContainer.querySelector('.create-person-section').classList.add('col-md-7');
 
   clearPersonFormFields(detailPersonElementsCreate);
 
+  const activatePeopleSelectButton = rootContainer.querySelector(".activatePeopleSelectButton");
+  const desactivatePeopleSelectButton = rootContainer.querySelector(".desactivatePeopleSelectButton");
+  activatePeopleSelectButton.classList.remove("d-none");
+  desactivatePeopleSelectButton.classList.add("d-none");
+  
   activatePeopleCreateButton.classList.add("d-none");
   desactivatePeopleCreateButton.classList.remove("d-none");
 
   const searchPeopleContainer = rootContainer.querySelector(".search-people-container");
   searchPeopleContainer.classList.remove('col-md-12');
-  searchPeopleContainer.classList.add('col-md-6');
+  searchPeopleContainer.classList.add('col-md-5');
   detailContainer.classList.remove('opacity-0');
   detailContainer.classList.add('opacity-100');
   window.selectedPersonDni = null;
@@ -157,11 +157,16 @@ function deactivatePeopleCreateMode(rootContainer, detailPersonElementsCreate, a
 
   clearPersonFormFields(detailPersonElementsCreate);
 
+  const activatePeopleSelectButton = rootContainer.querySelector(".activatePeopleSelectButton");
+  const desactivatePeopleSelectButton = rootContainer.querySelector(".desactivatePeopleSelectButton");
+  activatePeopleSelectButton.classList.remove("d-none");
+  desactivatePeopleSelectButton.classList.add("d-none");
+
   activatePeopleCreateButton.classList.remove("d-none");
   desactivatePeopleCreateButton.classList.add("d-none");
 
   const searchPeopleContainer = rootContainer.querySelector(".search-people-container");
-  searchPeopleContainer.classList.remove('col-md-6');
+  searchPeopleContainer.classList.remove('col-md-5');
   searchPeopleContainer.classList.add('col-md-12');
   window.selectedPersonDni = null;
 }

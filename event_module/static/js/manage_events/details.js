@@ -1,8 +1,6 @@
 export let selectedEventName = null;
 
 export function showDetails(button, detailElementsChange, searchContainer, detailContainer, buttonContainer) {
-  console.log(button.getAttribute("data-date"));
-  
   const event = extractEventDataFromButton(button);
 
   if (window.selectedEventName == event.name) {
@@ -146,7 +144,7 @@ export function addEmployeeToSelectedList(button, clientValidation) {
     return;
   }
 
-  createAndAddEmployeeToList(container, employeeData, button);
+  createAndAddEmployeeToList(container, employeeData, button, clientValidation);
 }
 
 function extractEmployeeDataFromButton(button) {
@@ -161,6 +159,7 @@ function updatePeopleCreateButtons(container) {
   const activatePeopleCreateButton = container.querySelector(".activatePeopleCreateButton");
   desactivatePeopleCreateButton.classList.add("d-none");
   activatePeopleCreateButton.classList.remove("d-none");
+  
 }
 
 function checkIfEmployeeExists(container, dni) {
@@ -188,26 +187,38 @@ function handleClientLimitExceeded(container, button) {
 
 function adjustUIForSelectedEmployees(container, button) {
   container.querySelector('.selected_employees_list').classList.remove('d-none');
-  container.querySelector('.selected_employees_list').classList.add('col-md-6');
+  container.querySelector('.selected_employees_list').classList.add('col-md-7');
   const searchPeopleContainer = button.closest(".search-people-container");
-  searchPeopleContainer.classList.add('col-md-6');
+  searchPeopleContainer.classList.add('col-md-5');
   searchPeopleContainer.classList.remove('col-md-12');
+
+  const activatePeopleCreateButton = container.querySelector(".activatePeopleCreateButton");
+  const desactivatePeopleCreateButton = container.querySelector(".desactivatePeopleCreateButton");
+  activatePeopleCreateButton.classList.remove("d-none");
+  desactivatePeopleCreateButton.classList.add("d-none");
+
+  const activatePeopleSelectButton = container.querySelector(".activatePeopleSelectButton");
+  const desactivatePeopleSelectButton = container.querySelector(".desactivatePeopleSelectButton");
+  activatePeopleSelectButton.classList.add("d-none");
+  desactivatePeopleSelectButton.classList.remove("d-none");
   container.querySelector('.create-person-section').classList.add('d-none');
 }
 
-function createAndAddEmployeeToList(container, employeeData, button) {
+function createAndAddEmployeeToList(container, employeeData, button, clientValidation) {
   const ul = container.querySelector('.selected-employees-list');
-  const li = createEmployeeListItem(employeeData, button);
+  const li = createEmployeeListItem(employeeData, button, container, clientValidation);
   ul.appendChild(li);
   searchWidthAdjust(button);
 }
 
-function createEmployeeListItem(employeeData, button) {
+
+
+function createEmployeeListItem(employeeData, button, container, clientValidation) {
   const li = document.createElement('li');
   li.className = 'selected-employees list-group-item d-flex justify-content-between align-items-center';
 
-  const span = createEmployeeSpan(employeeData);
-  const div = createEmployeeControls(button);
+  const span = createEmployeeSpan(employeeData, container, clientValidation);
+  const div = createEmployeeControls(button, clientValidation);
 
   li.appendChild(span);
   li.appendChild(div);
@@ -215,19 +226,45 @@ function createEmployeeListItem(employeeData, button) {
   return li;
 }
 
-function createEmployeeSpan(employeeData) {
+function createEmployeeSpan(employeeData, container, clientValidation) {
   const span = document.createElement('span');
   span.textContent = `${employeeData.dni} - ${employeeData.name}`;
+  if(clientValidation){
+    addClientData(`${employeeData.name}`, container)
+  }
   return span;
 }
 
-function createEmployeeControls(button) {
+
+function addClientData(name, container){
+  const editClientPopUp = document.getElementById('edit-client-pop-up-main');
+  const isEditChild = editClientPopUp.contains(container);
+  
+  if (isEditChild) {
+    const editSelectClientButton = document.getElementById('change-detail-client');
+    editSelectClientButton.textContent = name;
+  }else{
+    const createSelectClientButton = document.getElementById('create-detail-client');
+    createSelectClientButton.textContent = name;
+  }
+}
+
+function createEmployeeControls(button, clientValidation) {
   const div = document.createElement('div');
   div.className = "d-flex align-items-center";
   
+  const salaryInput = document.createElement("input");
+  salaryInput.type = "number"; // o "text", "date", etc.
+  salaryInput.name = "salary";
+  salaryInput.id = "salaryInput";
+  salaryInput.placeholder = "Ingrese el salario";
+  salaryInput.classList.add("form-control");
+  salaryInput.classList.add("control-form");
+  salaryInput.classList.add("mx-3");
   const select = createRoleSelect();
-  const deleteBtn = createDeleteButton(button);
+  const deleteBtn = createDeleteButton(button, clientValidation);
   
+  div.appendChild(salaryInput);
   div.appendChild(select);
   div.appendChild(deleteBtn);
   
@@ -260,7 +297,7 @@ function loadRolesIntoSelect(select) {
     });
 }
 
-function createDeleteButton(button) {
+function createDeleteButton(button, clientValidation) {
   const deleteBtn = document.createElement('button');
   deleteBtn.type = "button";
   deleteBtn.className = "delete-btn";
@@ -269,8 +306,24 @@ function createDeleteButton(button) {
     const li = deleteBtn.closest('li');
     if (li) li.remove();
     searchWidthAdjust(button);
+    if(clientValidation){
+      removeClientData(button);
+    }
   };
   return deleteBtn;
+}
+
+function removeClientData(button){
+  const editClientPopUp = document.getElementById('edit-client-pop-up-main');
+  const isEditChild = editClientPopUp.contains(button);
+  
+  if (isEditChild) {
+    const editSelectClientButton = document.getElementById('change-detail-client');
+    editSelectClientButton.textContent = "Ver cliente";
+  }else{
+    const createSelectClientButton = document.getElementById('create-detail-client');
+    createSelectClientButton.textContent = "Seleccionar cliente";
+  }
 }
 
 function searchWidthAdjust(button) {
@@ -284,11 +337,18 @@ function searchWidthAdjust(button) {
 }
 
 function adjustSearchContainerWidth(searchPeopleContainer, items) {
-  searchPeopleContainer.classList.remove('col-md-6', 'col-md-12');
+  searchPeopleContainer.classList.remove('col-md-5', 'col-md-12');
+  const container = searchPeopleContainer.closest(".pop-up-select_employees");
+  const activatePeopleSelectButton = container.querySelector(".activatePeopleSelectButton");
+  const desactivatePeopleSelectButton = container.querySelector(".desactivatePeopleSelectButton");
   if (items > 0) {
-    searchPeopleContainer.classList.add('col-md-6');
+    searchPeopleContainer.classList.add('col-md-5');
+    activatePeopleSelectButton.classList.add("d-none");
+    desactivatePeopleSelectButton.classList.remove("d-none");
   } else {
     searchPeopleContainer.classList.add('col-md-12');
+    activatePeopleSelectButton.classList.remove("d-none");
+    desactivatePeopleSelectButton.classList.add("d-none");
   }
 }
 
@@ -298,11 +358,11 @@ function adjustSelectedEmployeesListVisibility(container, items) {
   
   if (items > 0) {
     selectedEmployeesList.classList.remove('d-none');
-    selectedEmployeesList.classList.add('col-md-6');
+    selectedEmployeesList.classList.add('col-md-7');
     createPersonSection.classList.add('d-none');
   } else {
     selectedEmployeesList.classList.add('d-none');
-    selectedEmployeesList.classList.remove('col-md-6');
+    selectedEmployeesList.classList.remove('col-md-7');
   }
 }
 
@@ -336,7 +396,6 @@ function populateRoleSelect(select, roles) {
 function deletePersonFromList(button) {
   const li = button.closest('li');
   if (li) li.remove();
-  console.log("Eliminando, ajustando ancho...");
   searchWidthAdjust(button);
 }
 
@@ -363,8 +422,45 @@ function scheduleMessageRemoval(alert, duration) {
   }, duration);
 }
 
+export function setupPeopleSelect(
+  rootContainer
+) {
+  const activatePeopleSelectButton = rootContainer.querySelector(".activatePeopleSelectButton");
+  const desactivatePeopleSelectButton = rootContainer.querySelector(".desactivatePeopleSelectButton");
+  const activatePeopleCreateButton = rootContainer.querySelector(".activatePeopleCreateButton");
+  const desactivatePeopleCreateButton = rootContainer.querySelector(".desactivatePeopleCreateButton");
+  activatePeopleSelectButton.addEventListener('click', function () {
+    rootContainer.querySelector('.selected_employees_list').classList.remove('d-none');
+    rootContainer.querySelector('.selected_employees_list').classList.add('col-md-7');
+    const searchPeopleContainer = rootContainer.querySelector(".search-people-container");
+    searchPeopleContainer.classList.add('col-md-5');
+    searchPeopleContainer.classList.remove('col-md-12');
+    rootContainer.querySelector('.create-person-section').classList.add('d-none');
+    activatePeopleSelectButton.classList.add("d-none");
+    desactivatePeopleSelectButton.classList.remove("d-none");
+
+    activatePeopleCreateButton.classList.remove("d-none");
+    desactivatePeopleCreateButton.classList.add("d-none");
+  });
+  desactivatePeopleSelectButton.addEventListener('click', function () {
+    rootContainer.querySelector('.selected_employees_list').classList.add('d-none');
+    rootContainer.querySelector('.selected_employees_list').classList.remove('col-md-7');
+    const searchPeopleContainer = rootContainer.querySelector(".search-people-container");
+    searchPeopleContainer.classList.remove('col-md-5');
+    searchPeopleContainer.classList.add('col-md-12');
+    rootContainer.querySelector('.create-person-section').classList.add('d-none');
+    desactivatePeopleSelectButton.classList.add("d-none");
+    activatePeopleSelectButton.classList.remove("d-none");
+
+    activatePeopleCreateButton.classList.remove("d-none");
+    desactivatePeopleCreateButton.classList.add("d-none");
+  });
+}
+    
+
 // Window object assignments
 window.showMessage = showMessage;
+window.setupPeopleSelect = setupPeopleSelect;
 window.deletePersonFromList = deletePersonFromList;
 window.showRoles = showRoles;
 window.addEmployeeToSelectedList = addEmployeeToSelectedList;

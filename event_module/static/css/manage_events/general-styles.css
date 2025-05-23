@@ -69,6 +69,8 @@ html {
   transform: translate(20vh, 0);
 }
 
+.btn-see::after,
+.btn-disguise::after,
 .btn-minus::after,
 .btn-confirm::after,
 .btn-user-plus::after,
@@ -81,8 +83,16 @@ html {
   transition: all 0.3s ease-in-out;
   opacity: 0;
   pointer-events: none;
-  transform: translate(-20vh, -100%) scale(1);
+  transform: scale(1);
   content: ""; 
+}
+
+.btn-see::after {
+  content: "\f06e";
+}
+
+.btn-disguise::after {
+  content: "\f070";
 }
 
 .btn-minus::after {
@@ -109,12 +119,16 @@ html {
   content: "\f067";
 }
 
+.btn-see:focus::after,
+.btn-disguise:focus::after,
 .btn-minus:focus::after,
 .btn-confirm:focus::after,
 .btn-user-plus:focus::after,
 .btn-pencil:focus::after,
 .btn-trash:focus::after,
 .btn-plus:focus::after,
+.btn-see:hover::after,
+.btn-disguise:hover::after,
 .btn-minus:hover::after,
 .btn-confirm:hover::after,
 .btn-user-plus:hover::after,
@@ -257,7 +271,7 @@ select.control-form {
 #pop-up-container{
   padding: 2vh 3vh 3vh 6vh;
   background: white; border-radius: 1vw;
-  width: 90%; height: 90%; 
+  width: 95%; height: 90%; 
   overflow-y: auto; max-height: 100%;
 }
 

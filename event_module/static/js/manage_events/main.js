@@ -1,7 +1,7 @@
 import { setupEventSearch, setupPeopleSearch } from './search.js';
 import { setupEventCreate, setupPeopleCreate } from './create.js';
 import { setupUpdate, setupDelete, showMessage } from './update_delete.js';
-import { showDetails } from './details.js';
+import { showDetails, setupPeopleSelect } from './details.js';
 
 document.addEventListener("DOMContentLoaded", () => {
   handleSessionMessage();
@@ -236,4 +236,8 @@ function setupPeopleCreateFunctionalities(elements, detailElements) {
     elements.detailContainer,
     "create"
   );
+  setupPeopleSelect(elements.popUpEditClient);
+  setupPeopleSelect(elements.popUpEdit);
+  setupPeopleSelect(elements.popUpCreateClient);
+  setupPeopleSelect(elements.popUpCreate);
 }

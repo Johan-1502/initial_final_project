@@ -25,6 +25,14 @@
         <button type="submit" class="desactivatePeopleCreateButton btn-minus btn d-none btn-success special-button white">
           <p><i class="fa-solid fa-backward"></i>Volver</p>
         </button>
+
+        <button type="submit" class="activatePeopleSelectButton btn-see btn btn-success special-button blue">
+          <p><i class="fa-solid fa-eye"></i>Ver seleccion</p>
+        </button>
+        <button type="submit" class="desactivatePeopleSelectButton btn-disguise btn d-none btn-success special-button white">
+          <p><i class="fa-solid fa-eye-slash"></i>Ocultar vista</p>
+        </button>
+        
       </div>
     </div>
 
@@ -71,7 +79,7 @@
       </div>
 
       <div class="create-person-section d-none col-md-0 content-section h-100">
-        <h5 class="fw-bold">Registrar y asignar una nueva Persona al evento</h5>
+        <h5 class="fw-bold">Registrar una nueva Persona y asignarla</h5>
         <div id="personInformation">
           <form action="{% url 'add_employee' %}" class="createPersonForm" method="POST">
             <input type="hidden" name="form_type" value="create_person">
