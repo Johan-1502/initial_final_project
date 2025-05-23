@@ -3,7 +3,41 @@
 {% block content %}
 
     <div style="padding: 3vh">
-        <h1>¡Bienvenido al sistema de gestion de eventos EventGest!</h1>
+        <h1 style="margin-bottom: 10vh;">¡Bienvenido al sistema de gestion de eventos EventGest!</h1>
+        
+        {% if events %}
+            <div style="margin-top: 4vh;">
+                <h4>Estos son los proximos 5 eventos:</h4>
+                
+                {% for event in events %}
+                    <div class="event-container">
+                        <!-- Primera fila: Nombre del evento -->
+                        <div style="margin-bottom: 2vh;">
+                            <h3>{{ event.name }}</h3>
+                        </div>
+                        
+                        <!-- Segunda fila: Información en dos columnas -->
+                        <div style="display: flex; gap: 4vh;">
+                            <!-- Primera columna: Fechas -->
+                            <div style="flex: 1;">
+                                <p><strong>Fecha de inicio:</strong> {{ event.startDate }}</p>
+                                <p><strong>Fecha de fin:</strong> {{ event.endDate }}</p>
+                            </div>
+                            
+                            <!-- Segunda columna: Tipo y lugar -->
+                            <div style="flex: 1;">
+                                <p><strong>Tipo de evento:</strong> {{ event.typeEvent.type }}</p>
+                                <p><strong>Lugar:</strong> {{ event.place.name }}, {{ event.place.city }}</p>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div style="margin-top: 4vh;">
+                <p>No hay eventos próximos programados.</p>
+            </div>
+        {% endif %}
     </div>
 
-{% endblock %}
+{% endblock %}

@@ -261,6 +261,21 @@ select.control-form {
   font-weight: 500;
 }
 
+.event-container{
+  margin-bottom: 3vh; 
+  border: 2px solid #2c3e50; 
+  padding: 2vh; 
+  background-color: rgb(238, 238, 238);
+  border-radius: 8px;
+  box-shadow: 0 7px 5px 2px rgb(53, 53, 53, 0.7);
+  transition: all 0.3s;
+}
+
+.event-container:hover{
+  background-color: rgb(255, 255, 255);
+  box-shadow: 7px 7px 5px 2px rgb(44, 62, 80, 0.7);
+}
+
 .view-button {
   position: relative;
   overflow: hidden;

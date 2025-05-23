@@ -2,15 +2,24 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse, JsonResponse
 from . import services
 from .models import Person
+from event_module import services as event_services
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib import messages
+from datetime import date
 import json
 
 # Create your views here.
 
-
 def index(request):
-    return render(request, "index.html")
+    today = date.today()
+    
+    upcoming_events = event_services.filter_event_by(
+        startDate__gt=today,
+        isVisible=True   
+    ).order_by('startDate')[:5]
+    
+    print(upcoming_events)
+    return render(request, "index.html", {'events': upcoming_events})
 
 
 def manage_people(request):

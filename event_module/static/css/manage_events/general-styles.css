@@ -69,6 +69,10 @@ html {
   transform: translate(20vh, 0);
 }
 
+.btn-see::after,
+.btn-disguise::after,
+.btn-minus::after,
+.btn-confirm::after,
 .btn-user-plus::after,
 .btn-pencil::after,
 .btn-trash::after,
@@ -78,7 +82,25 @@ html {
   font-weight: 900;
   transition: all 0.3s ease-in-out;
   opacity: 0;
-  transform: translate(-20vh, -100%) scale(1);
+  pointer-events: none;
+  transform: scale(1);
+  content: ""; 
+}
+
+.btn-see::after {
+  content: "\f06e";
+}
+
+.btn-disguise::after {
+  content: "\f070";
+}
+
+.btn-minus::after {
+  content: "\f068";
+}
+
+.btn-confirm::after {
+  content: "\f00c";
 }
 
 .btn-user-plus::after {
@@ -97,10 +119,18 @@ html {
   content: "\f067";
 }
 
+.btn-see:focus::after,
+.btn-disguise:focus::after,
+.btn-minus:focus::after,
+.btn-confirm:focus::after,
 .btn-user-plus:focus::after,
 .btn-pencil:focus::after,
 .btn-trash:focus::after,
 .btn-plus:focus::after,
+.btn-see:hover::after,
+.btn-disguise:hover::after,
+.btn-minus:hover::after,
+.btn-confirm:hover::after,
 .btn-user-plus:hover::after,
 .btn-pencil:hover::after,
 .btn-trash:hover::after,
@@ -148,6 +178,17 @@ html {
   color: white;
 }
 
+.little-form {
+  padding: 15px 10px;
+  border-radius: 6px;
+  border: none;
+  font-size: 16px;
+  z-index: 15;
+  background-color: #fcfcfc;
+  transition: all 0.3s ease-in-out;
+  cursor: pointer;
+}
+
 .special-form {
   padding: 12px 16px;
   border: 2px solid #868686;
@@ -168,6 +209,7 @@ html {
   box-shadow: 0 4px 8px rgb(37, 37, 37, 0.2);
 }
 
+.little-form:focus,
 .special-form:focus,
 .control-form:focus {
   border-color: rgb(0, 140, 255);
@@ -176,9 +218,9 @@ html {
   box-shadow: 0 6px 12px rgb(0, 14, 92, 0.5);
 }
 
+.little-form:hover,
 .special-form:hover,
 .control-form:hover {
-  appearance: none;
   background-color: white;
   border-color: rgb(0, 140, 255);
   box-shadow: 0 6px 12px rgb(0, 14, 92, 0.5);
@@ -186,7 +228,6 @@ html {
 
 select.special-form,
 select.control-form {
-  height: 48px;
   appearance: none;
   background-color: #fff;
   cursor: pointer;
@@ -202,8 +243,39 @@ select.control-form {
   position: relative;
   transition: all 0.3s ease-in-out;
 }
-#search-people-container,
+.search-people-container,
 #search-container {
+  background-color: #f8f9fa;
+  padding: 1.5rem 2rem;
+  border-radius: 0.5rem;
+  border-color: #212529;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  color: #212529;
+  transition: all 0.3s ease-in-out;
+}
+
+#create-client-pop-up-main,
+#edit-client-pop-up-main,
+#create-pop-up-main,
+#edit-pop-up-main{
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1vh;
+  background: rgba(0,0,0,0.5); /* Fondo oscuro opcional */
+  z-index: 90;
+}
+
+#pop-up-container{
+  padding: 2vh 3vh 3vh 6vh;
+  background: white; border-radius: 1vw;
+  width: 95%; height: 90%; 
+  overflow-y: auto; max-height: 100%;
+}
+
+#search-people-container{
   background-color: #f8f9fa;
   padding: 1.5rem 2rem;
   border-radius: 0.5rem;
@@ -216,7 +288,6 @@ select.control-form {
 .content-section h5 {
   padding-bottom: 0.5rem;
   margin-bottom: 1.5rem;
-  position: relative;
   color: #0d6efd;
   overflow: hidden;
   z-index: 0;
@@ -227,10 +298,15 @@ select.control-form {
   text-decoration: none;
 }
 
+.employee-container{
+  border-radius: 1vh;
+  border: #b9b9b9 solid 2px;
+}
+
 .content-section h5::after {
   content: "";
-  position: relative;
-  width: 5%;
+  position: absolute;
+  width: 0%;
   transform: translateY(1vh);
   height: 2px;
   align-items: start;
@@ -244,11 +320,11 @@ select.control-form {
 
 @keyframes line-title-animation {
   0%, 100% {
-    width: 5%;
+    width: 15%;
     opacity: 1;
   }
   50% {
-    width: 30%;
+    width: 80%;
     opacity: 0.2;
   }
 }
@@ -283,10 +359,23 @@ select.control-form {
   animation: eye-animation 5s linear infinite backwards;
 }
 
+.delete-btn{
+  background-color: #f8f9fa;
+  border: 2px solid #bd0000;
+  color: #ff0000;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  padding: 0.5rem 1.2rem;
+  border-radius: 0.5rem;
+  display: inline-flex;
+  align-items: center;
+  margin: 0 1vw;
+}
+
 .btn-back {
   background-color: #f8f9fa;
   border: 2px solid #6c757d;
-  color: #6c757d;
+  color: #313131;
   font-weight: 500;
   transition: all 0.3s ease;
   padding: 0.5rem 1.2rem;
@@ -295,23 +384,25 @@ select.control-form {
   align-items: center;
 }
 
+.delete-btn:hover{
+  background-color: #a80000;
+  color: white;
+  box-shadow: 0 0 10px rgba(124, 1, 1, 0.4);
+}
+
 .btn-back:hover {
   background-color: #6c757d;
   color: white;
   box-shadow: 0 0 10px rgba(108, 117, 125, 0.4);
-  transform: translateX(-2px);
 }
 
 #before-button {
   font-size: 3vh;
 }
 
+.delete-btn i,
 .btn-back i {
   transition: transform 0.3s ease;
-}
-
-.btn-back:hover i {
-  transform: translateX(-3px);
 }
 
 .view-button:focus .fa-eye,

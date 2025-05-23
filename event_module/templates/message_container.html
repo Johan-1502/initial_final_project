@@ -1,5 +1,5 @@
 {% csrf_token %}
-    <div class="messages row justify-content-center" style="text-align: center; font-weight: bold; position:fixed; padding-left: 10%; padding-right: 10%; width:80%; transform: translateY(-4vh); z-index: 100;">
+    <div id="messages" class="messages row justify-content-center" style="text-align: center; font-weight: bold; position:fixed; padding-left: 10%; padding-right: 10%; width:80%; transform: translateY(-4vh); z-index: 100;">
         {% if messages %}
         <div class="messages">
         {% for message in messages %}   
