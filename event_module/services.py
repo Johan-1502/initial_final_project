@@ -12,6 +12,13 @@ import json
 
 
 def createEvent(request):
+    print(request.POST["name"])
+    print(request.POST["startDate"])
+    print(request.POST["endDate"])
+    print(request.POST["place"])
+    print(request.POST["typeEvent"])
+    print(request.POST["client"])
+    
     employees_json = request.POST.get("employees")
     employees = json.loads(employees_json)
     try:

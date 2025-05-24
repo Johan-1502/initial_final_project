@@ -62,6 +62,10 @@ function getDOMElements() {
     closeEditPopUp: document.getElementById("close-edit-pop-up"),
     closeCreateClientPopUp: document.getElementById("close-create-client-pop-up"),
     closeCreatePopUp: document.getElementById("close-create-pop-up"),
+    confirmEditClientPopUp: document.getElementById("confirm-edit-client-pop-up"),
+    confirmEditPopUp: document.getElementById("confirm-edit-pop-up"),
+    confirmCreateClientPopUp: document.getElementById("confirm-create-client-pop-up"),
+    confirmCreatePopUp: document.getElementById("confirm-create-pop-up"),
     detailElementsCreate: getCreateDetailElements(),
     detailElementsChange: getChangeDetailElements()
   };
@@ -136,6 +140,22 @@ function setupPopUpHandlers(elements) {
 
 function setupClosePopUpHandlers(elements) {
   elements.closeEditClientPopUp.addEventListener('click', () => {
+    closePopUp(elements.popUpEditClient);
+  });
+
+  elements.closeEditPopUp.addEventListener('click', () => {
+    closePopUp(elements.popUpEdit);
+  });
+
+  elements.closeCreateClientPopUp.addEventListener('click', () => {
+    closePopUp(elements.popUpCreateClient);
+  });
+  
+  elements.closeCreatePopUp.addEventListener('click', () => {
+    closePopUp(elements.popUpCreate);
+  });
+  
+  elements.confirmEditClientPopUp.addEventListener('click', () => {
     console.log("cerrando popup de editar cliente");
     console.log(getClientId());
     editClientInput.value = getClientId();
@@ -143,19 +163,19 @@ function setupClosePopUpHandlers(elements) {
     closePopUp(elements.popUpEditClient);
   });
 
-  elements.closeEditPopUp.addEventListener('click', () => {
+  elements.confirmEditPopUp.addEventListener('click', () => {
     saveChangedEmployees();
     closePopUp(elements.popUpEdit);
   });
 
-  elements.closeCreateClientPopUp.addEventListener('click', () => {
+  elements.confirmCreateClientPopUp.addEventListener('click', () => {
     console.log(createClientInput);
     console.log(getClientId());
     createClientInput.value = getClientId();
     closePopUp(elements.popUpCreateClient);
   });
   
-  elements.closeCreatePopUp.addEventListener('click', () => {
+  elements.confirmCreatePopUp.addEventListener('click', () => {
     saveSelectedEmployees();
     closePopUp(elements.popUpCreate);
   });
