@@ -56,7 +56,8 @@
                         data-type="{{ event.typeEvent.type }}"
                         data-place-id="{{ event.place.id }}"
                         data-type-id="{{ event.typeEvent.id }}"
-                        data-client="{{ event.client.id }}"
+                        data-client="{{ event.client.dni }}"
+                        data-client-name="{{ event.client.name }}"
                         data-name="{{ event.name }}">
                     <i class="fa-solid fa-eye"></i>Ver
                   </button>
@@ -94,7 +95,7 @@
                     <div class="justify-content-center w-100 mt-3 mt-md-0 d-flex">
                       <button id="createButton" type="submit" class="btn-user-plus btn btn-success mt-3 special-button green">
                         <p><i class="fa-solid fa-plus"></i>Registrar</p></button>
-                    </div
+                      </div>
                   </form>
                 </div>
               </div>

@@ -1,4 +1,5 @@
 export let selectedEventName = null;
+let idClient = null;
 
 export function showDetails(button, detailElementsChange, searchContainer, detailContainer, buttonContainer) {
   const event = extractEventDataFromButton(button);
@@ -21,6 +22,7 @@ function extractEventDataFromButton(button) {
     typeId: button.getAttribute('data-type-id'),
     id: button.getAttribute('data-id'),
     client: button.getAttribute('data-client'),
+    clientName: button.getAttribute('data-client-name'),
   };
 }
 
@@ -38,7 +40,7 @@ function hideEventDetails(searchContainer, detailContainer, buttonContainer) {
 
 function showEventDetails(event, detailElementsChange, searchContainer, detailContainer, buttonContainer) {
   window.selectedEventName = event.name;
-  
+
   populateEventForm(event, detailElementsChange);
   loadPlacesAndTypesForEdit(event, detailElementsChange);
   updateUIForEventDetails(searchContainer, detailContainer, buttonContainer);
@@ -49,15 +51,116 @@ function populateEventForm(event, detailElementsChange) {
   detailElementsChange.fechaInicio.value = event.startDate;
   detailElementsChange.fechaFin.value = event.endDate;
   detailElementsChange.id.value = event.id;
-  
+  console.log(event.client);
+  detailElementsChange.idClient.value = event.client;
+  idClient = event.client;
+  console.log("Client ID: " + detailElementsChange.idClient.value);
+  detailElementsChange.client.onclick = function () {
+    console.log("Client ID: " + event.client);
+    const popUp = document.getElementById('edit-client-pop-up-main');
+    popUp.classList.remove('d-none');
+    const container = popUp.querySelector("#pop-up-container");
+    const tempBtn = document.createElement('button');
+    tempBtn.setAttribute('data-dni', event.client);
+    tempBtn.setAttribute('data-name', event.clientName);
+    tempBtn.setAttribute('data-salary', event.clientName);
+    const ul = container.querySelector('.selected-employees-list');
+    const currentCount = ul.querySelectorAll('li').length;
+    console.log("Current count: " + currentCount);
+    if (currentCount != 1) {
+      showEventClient(container, extractEmployeeDataFromButton(tempBtn), tempBtn, true);
+    }
+  };
+  let selectedEmployees = [];
+    fetch(`/manage_event/employees_event/?id=${event.id}`)
+      .then(response => response.json())
+      .then(data => {
+        data.employees.forEach(employee => {
+          const dni = employee.dni;
+          const role = employee.roleId;
+          const salary = employee.salary;
+          selectedEmployees.push({ dni, role, salary });
+        });
+        const employeesButton = document.getElementById('change-employees');
+        employeesButton.value = JSON.stringify(selectedEmployees);
+      })
+      .catch(error => {
+        console.error("Error al filtrar eventos:", error);
+      });
+  detailElementsChange.employees.onclick = function () {
+    const popUp = document.getElementById('edit-pop-up-main');
+    popUp.classList.remove('d-none');
+    const container = popUp.querySelector("#pop-up-container");
+    const tempBtn = document.createElement('button');
+
+    const ul = container.querySelector('.selected-employees-list');
+    const currentCount = ul.querySelectorAll('li').length;
+    console.log("Current count: " + currentCount);
+    if (currentCount == 0) {
+      fetch(`/manage_event/employees_event/?id=${event.id}`)
+        .then(response => response.json())
+        .then(data => {
+          data.employees.forEach(employee => {
+            tempBtn.setAttribute('data-dni', employee.dni);
+            tempBtn.setAttribute('data-name', employee.name);
+            tempBtn.setAttribute('data-salary', employee.salary);
+            tempBtn.setAttribute('data-role-name', employee.roleName);
+            tempBtn.setAttribute('data-role-id', employee.roleId);
+            showEventEmployees(container, extractEmployeeDataFromButton(tempBtn), tempBtn, false);
+          });
+        })
+        .catch(error => {
+          console.error("Error al filtrar eventos:", error);
+        });
+    }
+
+  }
+  const editSelectClientButton = document.getElementById('change-detail-client');
+  editSelectClientButton.textContent = event.clientName;
+
   clearAndSetInitialSelects(event, detailElementsChange);
+}
+
+function showEventClient(container, employeeData, button, clientValidation) {
+  const ul = container.querySelector('.selected-employees-list');
+  console.log("Adding client to selected list");
+  console.log(checkIfEmployeeExists(container, employeeData.dni));
+  if (checkIfEmployeeExists(container, employeeData.dni)) {
+    return;
+  }
+  const li = createEmployeeListItem(employeeData, button, container, clientValidation);
+  ul.appendChild(li);
+
+  const searchPeopleContainer = container.querySelector(".search-people-container");
+  const ul2 = container.querySelector('.selected-employees-list');
+  const items = ul2.querySelectorAll('li').length;
+
+  adjustSearchContainerWidth(searchPeopleContainer, items);
+  adjustSelectedEmployeesListVisibility(container, items);
+}
+
+function showEventEmployees(container, employeeData, button, clientValidation) {
+  const ul = container.querySelector('.selected-employees-list');
+  console.log("Adding employee to selected list");
+  console.log(checkIfEmployeeExists(container, employeeData.dni));
+  if (!checkIfEmployeeExists(container, employeeData.dni)) {
+    const li = createEmployeeListItem(employeeData, button, container, clientValidation);
+    ul.appendChild(li);
+
+    const searchPeopleContainer = container.querySelector(".search-people-container");
+    const ul2 = container.querySelector('.selected-employees-list');
+    const items = ul2.querySelectorAll('li').length;
+
+    adjustSearchContainerWidth(searchPeopleContainer, items);
+    adjustSelectedEmployeesListVisibility(container, items);
+  }
 }
 
 function clearAndSetInitialSelects(event, detailElementsChange) {
   // Limpia los selects antes de agregar la opción actual
   detailElementsChange.selectPlace.innerHTML = "";
   detailElementsChange.selectType.innerHTML = "";
-  
+
   setInitialPlaceOption(event, detailElementsChange);
   setInitialTypeOption(event, detailElementsChange);
 }
@@ -129,14 +232,20 @@ function updateUIForEventDetails(searchContainer, detailContainer, buttonContain
 }
 
 export function addEmployeeToSelectedList(button, clientValidation) {
+  console.log("Adding employee to selected list");
   const container = button.closest("#pop-up-container");
   const employeeData = extractEmployeeDataFromButton(button);
-  
+
   updatePeopleCreateButtons(container);
-  
+
   if (checkIfEmployeeExists(container, employeeData.dni)) {
     handleEmployeeAlreadyExists(container, button);
     return;
+  }
+
+  if (clientValidation) {
+    console.log("Client validation is true");
+    idClient = employeeData.dni;
   }
 
   if (checkClientValidationLimit(container, clientValidation)) {
@@ -150,7 +259,8 @@ export function addEmployeeToSelectedList(button, clientValidation) {
 function extractEmployeeDataFromButton(button) {
   return {
     dni: button.getAttribute('data-dni'),
-    name: button.getAttribute('data-name')
+    name: button.getAttribute('data-name'),
+    salary: button.getAttribute('data-salary')
   };
 }
 
@@ -159,7 +269,7 @@ function updatePeopleCreateButtons(container) {
   const activatePeopleCreateButton = container.querySelector(".activatePeopleCreateButton");
   desactivatePeopleCreateButton.classList.add("d-none");
   activatePeopleCreateButton.classList.remove("d-none");
-  
+
 }
 
 function checkIfEmployeeExists(container, dni) {
@@ -211,14 +321,13 @@ function createAndAddEmployeeToList(container, employeeData, button, clientValid
   searchWidthAdjust(button);
 }
 
-
-
 function createEmployeeListItem(employeeData, button, container, clientValidation) {
   const li = document.createElement('li');
   li.className = 'selected-employees list-group-item d-flex justify-content-between align-items-center';
 
   const span = createEmployeeSpan(employeeData, container, clientValidation);
-  const div = createEmployeeControls(button, clientValidation);
+  const div = putEmployeeControls(employeeData, button, clientValidation);
+
 
   li.appendChild(span);
   li.appendChild(div);
@@ -229,30 +338,30 @@ function createEmployeeListItem(employeeData, button, container, clientValidatio
 function createEmployeeSpan(employeeData, container, clientValidation) {
   const span = document.createElement('span');
   span.textContent = `${employeeData.dni} - ${employeeData.name}`;
-  if(clientValidation){
+  if (clientValidation) {
     addClientData(`${employeeData.name}`, container)
   }
   return span;
 }
 
 
-function addClientData(name, container){
+function addClientData(name, container) {
   const editClientPopUp = document.getElementById('edit-client-pop-up-main');
   const isEditChild = editClientPopUp.contains(container);
-  
+
   if (isEditChild) {
     const editSelectClientButton = document.getElementById('change-detail-client');
     editSelectClientButton.textContent = name;
-  }else{
+  } else {
     const createSelectClientButton = document.getElementById('create-detail-client');
     createSelectClientButton.textContent = name;
   }
 }
 
-function createEmployeeControls(button, clientValidation) {
+function putEmployeeControls(employeeData, button, clientValidation) {
   const div = document.createElement('div');
   div.className = "d-flex align-items-center";
-  
+
   const salaryInput = document.createElement("input");
   salaryInput.type = "number"; // o "text", "date", etc.
   salaryInput.name = "salary";
@@ -261,35 +370,46 @@ function createEmployeeControls(button, clientValidation) {
   salaryInput.classList.add("form-control");
   salaryInput.classList.add("control-form");
   salaryInput.classList.add("mx-3");
-  const select = createRoleSelect();
+  salaryInput.value = employeeData.salary;
+  salaryInput.textContent = employeeData.salary;
+  const select = createRoleSelect(button);
+
+
+  const role = document.createElement("option");
+  role.value = button.getAttribute('data-role-id');
+  role.textContent = button.getAttribute('data-role-name');
+  select.appendChild(role);
+
   const deleteBtn = createDeleteButton(button, clientValidation);
-  
+
   div.appendChild(salaryInput);
   div.appendChild(select);
   div.appendChild(deleteBtn);
-  
+
   return div;
 }
 
-function createRoleSelect() {
+function createRoleSelect(button) {
   const select = document.createElement('select');
   select.name = "typeEvent";
   select.className = "little-form mb-2";
 
-  loadRolesIntoSelect(select);
-  
+  loadRolesIntoSelect(button, select);
+
   return select;
 }
 
-function loadRolesIntoSelect(select) {
+function loadRolesIntoSelect(button, select) {
   fetch('/manage_event/roles/')
     .then(response => response.json())
     .then(data => {
       data.roles.forEach(role => {
-        const option = document.createElement('option');
-        option.value = role.id;
-        option.textContent = role.name;
-        select.appendChild(option);
+        if (role.id != button.getAttribute('data-role-id')) {
+          const option = document.createElement('option');
+          option.value = role.id;
+          option.textContent = role.name;
+          select.appendChild(option);
+        }
       });
     })
     .catch(error => {
@@ -302,25 +422,25 @@ function createDeleteButton(button, clientValidation) {
   deleteBtn.type = "button";
   deleteBtn.className = "delete-btn";
   deleteBtn.innerHTML = `<i class="fa-solid fa-xmark fa-beat"></i>`;
-  deleteBtn.onclick = function() {
+  deleteBtn.onclick = function () {
     const li = deleteBtn.closest('li');
     if (li) li.remove();
     searchWidthAdjust(button);
-    if(clientValidation){
+    if (clientValidation) {
       removeClientData(button);
     }
   };
   return deleteBtn;
 }
 
-function removeClientData(button){
+function removeClientData(button) {
   const editClientPopUp = document.getElementById('edit-client-pop-up-main');
   const isEditChild = editClientPopUp.contains(button);
-  
+
   if (isEditChild) {
     const editSelectClientButton = document.getElementById('change-detail-client');
     editSelectClientButton.textContent = "Ver cliente";
-  }else{
+  } else {
     const createSelectClientButton = document.getElementById('create-detail-client');
     createSelectClientButton.textContent = "Seleccionar cliente";
   }
@@ -331,7 +451,7 @@ function searchWidthAdjust(button) {
   const searchPeopleContainer = button.closest(".search-people-container");
   const ul = container.querySelector('.selected-employees-list');
   const items = ul.querySelectorAll('li').length;
-  
+
   adjustSearchContainerWidth(searchPeopleContainer, items);
   adjustSelectedEmployeesListVisibility(container, items);
 }
@@ -355,7 +475,7 @@ function adjustSearchContainerWidth(searchPeopleContainer, items) {
 function adjustSelectedEmployeesListVisibility(container, items) {
   const selectedEmployeesList = container.querySelector('.selected_employees_list');
   const createPersonSection = container.querySelector('.create-person-section');
-  
+
   if (items > 0) {
     selectedEmployeesList.classList.remove('d-none');
     selectedEmployeesList.classList.add('col-md-7');
@@ -370,7 +490,7 @@ function adjustSelectedEmployeesListVisibility(container, items) {
 function showRoles(button) {
   const container = button.closest("#pop-up-container");
   const select = button.parentElement.querySelector('select');
-  
+
   fetch('manage_event/roles/')
     .then(response => response.json())
     .then(data => {
@@ -456,7 +576,7 @@ export function setupPeopleSelect(
     desactivatePeopleCreateButton.classList.add("d-none");
   });
 }
-    
+
 
 // Window object assignments
 window.showMessage = showMessage;
@@ -469,3 +589,50 @@ window.showEventDetails = function (button) {
   const { detailElementsChange, searchContainer, detailContainer, buttonContainer } = window.eventGlobals;
   showDetails(button, detailElementsChange, searchContainer, detailContainer, buttonContainer);
 };
+
+export function getClientId() {
+  return idClient;
+}
+
+export function saveChangedEmployees() {
+  let selectedEmployees = [];
+
+  const popUp = document.getElementById('edit-pop-up-main');
+  const container = popUp.querySelector("#pop-up-container");
+  const ul = container.querySelector('.selected-employees-list');
+
+  const items = ul.querySelectorAll('li');
+  console.log(ul);
+  items.forEach(item => {
+    const dni = item.querySelector('span').textContent.split(' - ')[0];
+    const role = item.querySelector('select').value;
+    const salary = item.querySelector('input').value;
+    selectedEmployees.push({ dni, role, salary });
+  });
+
+  const employeesButton = document.getElementById('change-employees');
+  employeesButton.value = JSON.stringify(selectedEmployees);
+
+  console.log(selectedEmployees);
+}
+
+export function saveSelectedEmployees() {
+  let selectedEmployees = [];
+
+  const popUp = document.getElementById('create-pop-up-main');
+  const container = popUp.querySelector("#pop-up-container");
+  const ul = container.querySelector('.selected-employees-list');
+
+  const items = ul.querySelectorAll('li');
+  console.log(ul);
+  items.forEach(item => {
+    const dni = item.querySelector('span').textContent.split(' - ')[0];
+    const role = item.querySelector('select').value;
+    selectedEmployees.push({ dni, role });
+  });
+
+  const employeesButton = document.getElementById('create-employees');
+  employeesButton.value = JSON.stringify(selectedEmployees);
+
+  console.log(selectedEmployees);
+}

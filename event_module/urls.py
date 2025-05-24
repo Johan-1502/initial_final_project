@@ -11,4 +11,5 @@ urlpatterns = [
     path('roles/', views.rolesToSend, name='roles'),
     path('people/', views.peopleToSend, name='people'),
     path('add_employee/', views.add_employee, name='add_employee'),
+    path('employees_event/', views.employeesOfAnEvent, name='employees_event'),
 ]

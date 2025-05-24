@@ -1,3 +1,4 @@
+from django.forms import ValidationError
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse, JsonResponse
 from . import services
@@ -23,9 +24,10 @@ def add_employee(request):
     return JsonResponse({"success": False, "message": "Petición inválida.", "new_person_id": person.id})
 
 def manage_event(request):
+    print("manage_event")
     events = services.getAllEvents()
     people = people_services.getAllPeople()
-    print(len(people))
+    #print(len(people))
     if request.method == "GET":
         return render(request, "manage_event.html", {"events": events, "people":people})
     else:
@@ -34,6 +36,10 @@ def manage_event(request):
             try:
                 services.createEvent(request)
                 messages.success(request, f"Evento registrado correctamente.")
+                return redirect("/manage_event/")
+            except ValidationError as e:
+                # Devuelve el mensaje de validación personalizado
+                return JsonResponse({"success": False, "message": str(e)}, status=400)
             except Exception as e:
                 messages.error(
                     request,
@@ -135,3 +141,21 @@ def peopleToSend(request):
             for person in people
         ]
         return JsonResponse({"people": data})
+
+def employeesOfAnEvent(request):
+    print("employeesOfAnEvent")
+    if request.method == "GET":
+        event_id = request.GET.get("id")
+        employees = services.getEmployeesByEvent(event_id)
+        print("employeesOfAnEvent", employees)
+        data = [
+            {
+                "dni": employee.person.dni,
+                "name": employee.person.name,
+                "salary": employee.salary,
+                "roleName": employee.role.name,
+                "roleId": employee.role.id,
+            }
+            for employee in employees
+        ]
+        return JsonResponse({"employees": data})

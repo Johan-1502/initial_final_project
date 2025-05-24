@@ -57,6 +57,7 @@ class WorkersByEvent(models.Model):
     role = models.ForeignKey('people_module.Role', on_delete=models.CASCADE)
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
     person = models.ForeignKey('people_module.Person', on_delete=models.CASCADE, related_name="roles")
+    salary = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
 
     def __str__(self):
         return f"{self.role.name} en {self.event.name} por {self.person.name}"

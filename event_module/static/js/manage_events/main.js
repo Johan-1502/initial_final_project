@@ -1,7 +1,11 @@
 import { setupEventSearch, setupPeopleSearch } from './search.js';
 import { setupEventCreate, setupPeopleCreate } from './create.js';
 import { setupUpdate, setupDelete, showMessage } from './update_delete.js';
-import { showDetails, setupPeopleSelect } from './details.js';
+import { showDetails, setupPeopleSelect, addEmployeeToSelectedList, saveChangedEmployees, saveSelectedEmployees } from './details.js';
+import { getClientId } from './details.js'
+
+let createClientInput = null;
+let editClientInput = null;
 
 document.addEventListener("DOMContentLoaded", () => {
   handleSessionMessage();
@@ -30,6 +34,9 @@ function initializeEventManagement() {
 }
 
 function getDOMElements() {
+  createClientInput = document.getElementById('create-id-client');
+  editClientInput = document.getElementById('change-id-client');
+
   return {
     resultsList: document.getElementById('resultsList'),
     searchInput: document.getElementById('searchInput'),
@@ -82,6 +89,7 @@ function getCreateDetailElements() {
     client: document.getElementById('create-detail-client'),
     selectPlace: document.getElementById('create-selectPlace'),
     selectType: document.getElementById('create-selectType'),
+    idClient: document.getElementById('create-id-client'),
   };
 }
 
@@ -94,6 +102,8 @@ function getChangeDetailElements() {
     client: document.getElementById('change-detail-client'),
     selectPlace: document.getElementById('change-selectPlace'),
     selectType: document.getElementById('change-selectType'),
+    idClient: document.getElementById('change-id-client'),
+    employees: document.getElementById('change-pop-up-detail-employees'),
   };
 }
 
@@ -126,18 +136,27 @@ function setupPopUpHandlers(elements) {
 
 function setupClosePopUpHandlers(elements) {
   elements.closeEditClientPopUp.addEventListener('click', () => {
+    console.log("cerrando popup de editar cliente");
+    console.log(getClientId());
+    editClientInput.value = getClientId();
+    console.log(editClientInput.value);
     closePopUp(elements.popUpEditClient);
   });
 
   elements.closeEditPopUp.addEventListener('click', () => {
+    saveChangedEmployees();
     closePopUp(elements.popUpEdit);
   });
 
   elements.closeCreateClientPopUp.addEventListener('click', () => {
+    console.log(createClientInput);
+    console.log(getClientId());
+    createClientInput.value = getClientId();
     closePopUp(elements.popUpCreateClient);
   });
-
+  
   elements.closeCreatePopUp.addEventListener('click', () => {
+    saveSelectedEmployees();
     closePopUp(elements.popUpCreate);
   });
 }
