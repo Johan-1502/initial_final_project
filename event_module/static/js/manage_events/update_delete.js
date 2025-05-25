@@ -4,8 +4,8 @@ export function setupUpdate(updateButton, changeForm, detailElementsChange, csrf
   });
 }
 
-function handleUpdateClick(changeForm, detailElementsChange, csrfToken) {
-  event.preventDefault();
+function handleUpdateClick(changeForm, detailElementsChange, csrfToken, event) {
+  
   if (!validateForm(changeForm)) {
     return;
   }
@@ -16,6 +16,7 @@ function handleUpdateClick(changeForm, detailElementsChange, csrfToken) {
   const endDate = new Date(endDateInput.value);
 
   if (startDate && endDate && startDate > endDate) {
+    event.preventDefault();
     showMessage("La fecha de inicio del evento debe ser anterior a la fecha de finalización", "danger");
     endDateInput.focus();
   }else{
