@@ -61,6 +61,7 @@ function populateEventForm(event, detailElementsChange) {
     popUp.classList.remove('d-none');
     const container = popUp.querySelector("#pop-up-container");
     const tempBtn = document.createElement('button');
+
     tempBtn.setAttribute('data-dni', event.client);
     tempBtn.setAttribute('data-name', event.clientName);
     tempBtn.setAttribute('data-salary', event.clientName);
@@ -71,22 +72,23 @@ function populateEventForm(event, detailElementsChange) {
       showEventClient(container, extractEmployeeDataFromButton(tempBtn), tempBtn, true);
     }
   };
+
   let selectedEmployees = [];
-    fetch(`/manage_event/employees_event/?id=${event.id}`)
-      .then(response => response.json())
-      .then(data => {
-        data.employees.forEach(employee => {
-          const dni = employee.dni;
-          const role = employee.roleId;
-          const salary = employee.salary;
-          selectedEmployees.push({ dni, role, salary });
-        });
-        const employeesButton = document.getElementById('change-employees');
-        employeesButton.value = JSON.stringify(selectedEmployees);
-      })
-      .catch(error => {
-        console.error("Error al filtrar eventos:", error);
+  fetch(`/manage_event/employees_event/?id=${event.id}`)
+    .then(response => response.json())
+    .then(data => {
+      data.employees.forEach(employee => {
+        const dni = employee.dni;
+        const role = employee.roleId;
+        const salary = employee.salary;
+        selectedEmployees.push({ dni, role, salary });
       });
+      const employeesButton = document.getElementById('change-employees');
+      employeesButton.value = JSON.stringify(selectedEmployees);
+    })
+    .catch(error => {
+      console.error("Error al filtrar eventos:", error);
+    });
   detailElementsChange.employees.onclick = function () {
     const popUp = document.getElementById('edit-pop-up-main');
     popUp.classList.remove('d-none');
@@ -119,6 +121,18 @@ function populateEventForm(event, detailElementsChange) {
   editSelectClientButton.textContent = event.clientName;
 
   clearAndSetInitialSelects(event, detailElementsChange);
+}
+
+function selectPersonByDni(dni) {
+  const ul = document.querySelector('.resultPersonList');
+  if (!ul) return;
+  const items = ul.querySelectorAll('li');
+  items.forEach(li => {
+    const btn = li.querySelector('button[data-dni]');
+    if (btn && btn.getAttribute('data-dni') === dni) {
+      btn.click(); // Simula el click en el botón
+    }
+  });
 }
 
 function showEventClient(container, employeeData, button, clientValidation) {
@@ -362,7 +376,7 @@ function putEmployeeControls(employeeData, button, clientValidation) {
   const div = document.createElement('div');
   div.className = "d-flex align-items-center";
 
-  if(!clientValidation){
+  if (!clientValidation) {
     const salaryInput = document.createElement("input");
     salaryInput.type = "number"; // o "text", "date", etc.
     salaryInput.name = "salary";
@@ -383,11 +397,11 @@ function putEmployeeControls(employeeData, button, clientValidation) {
     div.appendChild(select);
   }
 
-  
+
 
   const deleteBtn = createDeleteButton(button, clientValidation);
 
-  
+
   div.appendChild(deleteBtn);
 
   return div;
@@ -454,6 +468,7 @@ function searchWidthAdjust(button) {
   const container = button.closest("#pop-up-container");
   const searchPeopleContainer = button.closest(".search-people-container");
   const ul = container.querySelector('.selected-employees-list');
+  console.log(ul);
   const items = ul.querySelectorAll('li').length;
 
   adjustSearchContainerWidth(searchPeopleContainer, items);
@@ -632,7 +647,8 @@ export function saveSelectedEmployees() {
   items.forEach(item => {
     const dni = item.querySelector('span').textContent.split(' - ')[0];
     const role = item.querySelector('select').value;
-    selectedEmployees.push({ dni, role });
+    const salary = item.querySelector('input').value;
+    selectedEmployees.push({ dni, role, salary });
   });
 
   const employeesButton = document.getElementById('create-employees');

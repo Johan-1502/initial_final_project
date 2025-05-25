@@ -18,11 +18,26 @@ def createEvent(request):
     print(request.POST["place"])
     print(request.POST["typeEvent"])
     print(request.POST["client"])
-    
+
     employees_json = request.POST.get("employees")
     employees = json.loads(employees_json)
+    print("employees", employees)
     try:
-        event = Event.objects.create(
+        employeesToAssignRoles = []
+        if employees_json:
+            for employee in employees:
+                person = Person.objects.get(dni=employee["dni"])
+                role = Role.objects.get(id=employee["role"])
+                if employee["salary"] == "":
+                    raise ValidationError("Salario no digitado.")
+                employeesToAssignRoles.append(
+                    {
+                        "person": person,
+                        "role": role,
+                        "salary": employee["salary"],
+                    })
+
+        event = Event(
             name=request.POST["name"],
             startDate=request.POST["startDate"],
             endDate=request.POST["endDate"],
@@ -31,18 +46,19 @@ def createEvent(request):
             client=Person.objects.get(dni=request.POST["client"]),
         )
         event.full_clean()
+        
         event.save()
         
-        if employees_json:
-            for employee in employees:
-                try:
-                    person = Person.objects.get(dni=employee["dni"])
-                    role = Role.objects.get(id=employee["role"])
-                    WorkersByEvent.objects.create(
-                        event=event, person=person, role=role
-                    )
-                except Person.DoesNotExist:
-                    continue
+        for employee in employeesToAssignRoles: 
+            WorkersByEvent.objects.create(
+                salary=employee["salary"],
+                event=event,
+                person=employee["person"],
+                role=employee["role"],
+            )
+            
+                
+
     except ValidationError as v:
         raise v
     except IntegrityError as i:
@@ -85,9 +101,9 @@ def editEvent(request):
         event.client = Person.objects.get(dni=request.POST["client"])
         event.full_clean()
         event.save()
-        
+
         WorkersByEvent.objects.filter(event=event).delete()
-        
+
         if employees_json:
             for employee in employees:
                 try:
@@ -117,7 +133,8 @@ def getEventById(id):
         return Event.objects.get(id=id)
     except Person.DoesNotExist:
         raise Person.DoesNotExist(f"No se encontró un evento con el id {id}")
-    
+
+
 def getEmployeesByEvent(id):
     print("función getEmployeesByEvent")
     print(id)

@@ -5,13 +5,29 @@ export function setupUpdate(updateButton, changeForm, detailElementsChange, csrf
 }
 
 function handleUpdateClick(changeForm, detailElementsChange, csrfToken, event) {
-  
+
   if (!validateForm(changeForm)) {
     return;
   }
   const startDateInput = document.getElementById('change-detail-fecha-inicio');
   const endDateInput = document.getElementById('change-detail-fecha-fin');
-  
+
+  const employeesInput = document.getElementById('change-employees');
+  const clientInput = document.getElementById('change-detail-client');
+
+  //let employees = [];
+  //try {
+  //  employees = JSON.parse(employeesInput.value);
+  //} catch (e) {
+  //  employees = [];
+  //}
+  //if (!Array.isArray(employees) || employees.length === 0) {
+  //  event.preventDefault();
+  //  showMessage("Debe seleccionar al menos un empleado.", "danger");
+  //  return;
+  //}
+  //console.log("change-employees", employeesInput.value);
+
   const startDate = new Date(startDateInput.value);
   const endDate = new Date(endDateInput.value);
 
@@ -19,12 +35,12 @@ function handleUpdateClick(changeForm, detailElementsChange, csrfToken, event) {
     event.preventDefault();
     showMessage("La fecha de inicio del evento debe ser anterior a la fecha de finalización", "danger");
     endDateInput.focus();
-  }else{
+  } else {
     const formData = new FormData(changeForm);
     performUpdateRequest(formData, detailElementsChange, csrfToken);
   }
-  
-  
+
+
 }
 
 function validateForm(changeForm) {
@@ -36,7 +52,7 @@ function validateForm(changeForm) {
 }
 
 function performUpdateRequest(formData, detailElementsChange, csrfToken) {
-  
+
 
   fetch(`/manage_event/edit_event/`, {
     method: "POST",
@@ -105,7 +121,7 @@ function performDeleteRequest(formData, csrfToken) {
 
 function handleDeleteResponse(response) {
   sessionStorage.setItem("successMessage", "Evento eliminado correctamente.");
-  
+
   if (response.ok) {
     handleDeleteSuccess();
   } else {

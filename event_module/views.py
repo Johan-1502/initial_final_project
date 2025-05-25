@@ -9,6 +9,7 @@ import json
 
 # Create your views here.
 
+
 @csrf_exempt  # Solo si no usas el token CSRF, pero es mejor enviarlo desde JS
 def add_employee(request):
     if request.method == "POST":
@@ -17,43 +18,81 @@ def add_employee(request):
             try:
                 person = people_services.createPerson(request)
                 print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
-                return JsonResponse({"success": True, "message": "Persona registrada correctamente."})
+                return JsonResponse(
+                    {"success": True, "message": "Persona registrada correctamente."}
+                )
             except Exception as e:
-                return JsonResponse({"success": False, "message": "Ocurrió un error al crear la persona: El dni se encuentra asignado a otra persona."})
+                return JsonResponse(
+                    {
+                        "success": False,
+                        "message": "Ocurrió un error al crear la persona: El dni se encuentra asignado a otra persona.",
+                    }
+                )
     # Si no es POST o no es create_person
-    return JsonResponse({"success": False, "message": "Petición inválida.", "new_person_id": person.id})
+    return JsonResponse(
+        {"success": False, "message": "Petición inválida.", "new_person_id": person.id}
+    )
+
 
 def manage_event(request):
     print("manage_event")
     events = services.getAllEvents()
     people = people_services.getAllPeople()
-    #print(len(people))
+
     if request.method == "GET":
-        return render(request, "manage_event.html", {"events": events, "people":people})
-    else:
-        form_type = request.POST.get("form_type")
-        if form_type == "create_person":
-            try:
-                services.createEvent(request)
-                messages.success(request, f"Evento registrado correctamente.")
-                return redirect("/manage_event/")
-            except ValidationError as e:
-                # Devuelve el mensaje de validación personalizado
-                return JsonResponse({"success": False, "message": str(e)}, status=400)
-            except Exception as e:
-                messages.error(
-                    request,
-                    f"Ocurrió un error al crear el evento",
-                )
-                print(e)
-                return redirect("/manage_event/")
+        return render(request, "manage_event.html", {"events": events, "people": people})
+
+    form_type = request.POST.get("form_type")
+    if form_type == "create_person":
+        try:
+            services.createEvent(request)
+            messages.success(request, "Evento registrado correctamente.")
+            return redirect("/manage_event/")
+        except ValidationError:
+            employees_json = request.POST.get("employees")
+            employees = json.loads(employees_json) if employees_json else []
+            if any(employee.get("salary", "") == "" for employee in employees):
+                messages.error(request, "Debe asignarle un salario a cada empleado del evento.")
+            else:
+                messages.error(request, "La fecha de finalización no puede ser anterior a la fecha de inicio.")
+            return redirect("/manage_event/")
+        except Exception as e:
+            employees_json = request.POST.get("employees")
+            client = request.POST.get("client")
+            errorFound = False
+
+            employees = json.loads(employees_json) if employees_json else []
+            if employees_json and len(employees) == 0:
+                messages.error(request, "Debe seleccionar al menos un empleado para el evento.")
+                errorFound = True
+
+            if any(employee.get("role") == "null" for employee in employees):
+                messages.error(request, "Debe seleccionar un rol para cada empleado.")
+                errorFound = True
+
+            if not client:
+                messages.error(request, "Debe seleccionar un cliente para el evento.")
+                errorFound = True
+
+            if not employees_json:
+                messages.error(request, "Debe seleccionar al menos un empleado para el evento.")
+                errorFound = True
+
+            if not errorFound:
+                messages.error(request, "Error al crear el evento")
+
+            print("Error: ", e)
+            return redirect("/manage_event/")
+
     return render(request, "manage_event.html", {"events": events, "people": people})
+
 
 def delete_event(request):
     services.deleteEvent(request.POST["id"])
     messages.success(request, f"Evento eliminado correctamente.")
     events = services.getAllEvents()
     return render(request, "manage_event.html", {"events": events})
+
 
 def edit_event(request):
     try:
@@ -80,6 +119,7 @@ def edit_event(request):
         )
         return JsonResponse({"success": False, "error": str(e)})
 
+
 def filter_events(request):
     if request.method == "GET":
         query = request.GET.get("query", "").strip().lower()
@@ -97,10 +137,12 @@ def filter_events(request):
             for event in events
         ]
         return JsonResponse({"events": data})
-    
+
+
 def rolesToSend(request):
-    roles = list(people_services.getAllRoles().values('id', 'name'))
-    return JsonResponse({'roles': roles})
+    roles = list(people_services.getAllRoles().values("id", "name"))
+    return JsonResponse({"roles": roles})
+
 
 def placesToSend(request):
     if request.method == "GET":
@@ -115,6 +157,7 @@ def placesToSend(request):
         ]
         return JsonResponse({"places": data})
 
+
 def typesToSend(request):
     if request.method == "GET":
         types = services.getallTypes()
@@ -127,6 +170,7 @@ def typesToSend(request):
             for type in types
         ]
         return JsonResponse({"types": data})
+
 
 def peopleToSend(request):
     print("peopleToSend")
@@ -141,6 +185,7 @@ def peopleToSend(request):
             for person in people
         ]
         return JsonResponse({"people": data})
+
 
 def employeesOfAnEvent(request):
     print("employeesOfAnEvent")
