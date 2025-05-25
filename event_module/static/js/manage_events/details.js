@@ -362,28 +362,32 @@ function putEmployeeControls(employeeData, button, clientValidation) {
   const div = document.createElement('div');
   div.className = "d-flex align-items-center";
 
-  const salaryInput = document.createElement("input");
-  salaryInput.type = "number"; // o "text", "date", etc.
-  salaryInput.name = "salary";
-  salaryInput.id = "salaryInput";
-  salaryInput.placeholder = "Ingrese el salario";
-  salaryInput.classList.add("form-control");
-  salaryInput.classList.add("control-form");
-  salaryInput.classList.add("mx-3");
-  salaryInput.value = employeeData.salary;
-  salaryInput.textContent = employeeData.salary;
-  const select = createRoleSelect(button);
+  if(!clientValidation){
+    const salaryInput = document.createElement("input");
+    salaryInput.type = "number"; // o "text", "date", etc.
+    salaryInput.name = "salary";
+    salaryInput.id = "salaryInput";
+    salaryInput.placeholder = "Ingrese el salario";
+    salaryInput.classList.add("form-control");
+    salaryInput.classList.add("control-form");
+    salaryInput.classList.add("mx-3");
+    salaryInput.value = employeeData.salary;
+    salaryInput.textContent = employeeData.salary;
+    const select = createRoleSelect(button);
+    const role = document.createElement("option");
+    role.value = button.getAttribute('data-role-id');
+    role.textContent = button.getAttribute('data-role-name');
+    select.appendChild(role);
 
+    div.appendChild(salaryInput);
+    div.appendChild(select);
+  }
 
-  const role = document.createElement("option");
-  role.value = button.getAttribute('data-role-id');
-  role.textContent = button.getAttribute('data-role-name');
-  select.appendChild(role);
+  
 
   const deleteBtn = createDeleteButton(button, clientValidation);
 
-  div.appendChild(salaryInput);
-  div.appendChild(select);
+  
   div.appendChild(deleteBtn);
 
   return div;
