@@ -1,16 +1,29 @@
 export function setupUpdate(updateButton, changeForm, detailElementsChange, csrfToken) {
-  updateButton.addEventListener('click', function () {
-    handleUpdateClick(changeForm, detailElementsChange, csrfToken);
+  updateButton.addEventListener('click', function (event) {
+    handleUpdateClick(changeForm, detailElementsChange, csrfToken, event);
   });
 }
 
 function handleUpdateClick(changeForm, detailElementsChange, csrfToken) {
+  event.preventDefault();
   if (!validateForm(changeForm)) {
     return;
   }
+  const startDateInput = document.getElementById('change-detail-fecha-inicio');
+  const endDateInput = document.getElementById('change-detail-fecha-fin');
   
-  const formData = new FormData(changeForm);
-  performUpdateRequest(formData, detailElementsChange, csrfToken);
+  const startDate = new Date(startDateInput.value);
+  const endDate = new Date(endDateInput.value);
+
+  if (startDate && endDate && startDate > endDate) {
+    showMessage("La fecha de inicio del evento debe ser anterior a la fecha de finalización", "danger");
+    endDateInput.focus();
+  }else{
+    const formData = new FormData(changeForm);
+    performUpdateRequest(formData, detailElementsChange, csrfToken);
+  }
+  
+  
 }
 
 function validateForm(changeForm) {
@@ -22,6 +35,8 @@ function validateForm(changeForm) {
 }
 
 function performUpdateRequest(formData, detailElementsChange, csrfToken) {
+  
+
   fetch(`/manage_event/edit_event/`, {
     method: "POST",
     headers: {
@@ -35,6 +50,7 @@ function performUpdateRequest(formData, detailElementsChange, csrfToken) {
     })
     .catch(error => {
       handleUpdateError(error);
+      createMessageAlert("AAAAAAAAAAA", "success")
     });
 }
 
@@ -109,16 +125,20 @@ function handleDeleteError(error) {
   alert("Error al eliminar el evento.");
 }
 
-export function showMessage(message, type = "success") {
-  const container = getMessageContainer();
+export function showMessage(type, text, duration = 3000) {
+  const container = document.getElementById("js-messages-container");
   if (!container) return;
 
-  const alert = createMessageAlert(message, type);
+  const alert = createMessageAlert(type, text);
   container.appendChild(alert);
+
+  scheduleMessageRemoval(alert, duration);
 }
 
-function getMessageContainer() {
-  return document.querySelector(".messages");
+function scheduleMessageRemoval(alert, duration) {
+  setTimeout(() => {
+    alert.remove();
+  }, duration);
 }
 
 function createMessageAlert(message, type) {
