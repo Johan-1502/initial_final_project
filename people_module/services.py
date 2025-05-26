@@ -3,6 +3,7 @@ from django.core.exceptions import ValidationError
 from django.db import IntegrityError
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from event_module.models import WorkersByEvent
 
 
 def createPerson(request):
@@ -65,3 +66,20 @@ def getPersonById(dni):
         return Person.objects.get(dni=dni)
     except Person.DoesNotExist:
         raise Person.DoesNotExist(f"No se encontró una persona con el DNI {dni}")
+
+def getEventHistoryByPerson(dni):
+    try:
+        person = Person.objects.get(dni=dni)
+        workers = WorkersByEvent.objects.filter(person=person)
+        history = []
+        for worker in workers:
+            history.append({
+                "Nombre del evento": worker.event.name,
+                "Fecha de inicio": worker.event.startDate.strftime('%Y/%m/%d') if worker.event.startDate else "",
+                "Fecha de finalización": worker.event.endDate.strftime('%Y/%m/%d') if worker.event.endDate else "",
+                "Salario": str(worker.salary),
+                "Rol": worker.role.name,
+            })
+        return history
+    except Person.DoesNotExist:
+        return []

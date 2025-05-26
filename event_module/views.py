@@ -99,6 +99,15 @@ def edit_event(request):
         if "id" not in request.POST:
             return JsonResponse({"success": False, "error": "Falta el DNI"})
 
+        #EJEMPLO, borrar luego
+        event_id = 2
+        empleados = services.getEmployeesDataByEvent(event_id)
+        print("--------------------------------------")
+        print("Empleados del evento con id=2:")
+        for empleado in empleados:
+            print(empleado)
+        #FIN EJEMPLO
+
         services.editEvent(request)
         updated_event = services.getEventById(request.POST["id"])
 

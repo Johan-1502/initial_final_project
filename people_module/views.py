@@ -56,6 +56,16 @@ def edit_person(request):
         services.editPerson(request)
         updated_person = services.getPersonById(request.POST["dni"])
 
+
+        #EJEMPLO borrar luego
+        print("------------------------------------------")
+        print("HISTORIAL DE EVENTOS DE LA PERSONA")
+        person_id = 8888888
+        works = services.getEventHistoryByPerson(person_id)
+        for work in works:
+            print(work)
+        #FIN EJEMPLO
+
         return JsonResponse(
             {
                 "success": True,
