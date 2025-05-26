@@ -1,3 +1,4 @@
+import { setIsFisrtTime, idClient } from "./details.js";
 export function setupUpdate(updateButton, changeForm, detailElementsChange, csrfToken) {
   updateButton.addEventListener('click', function (event) {
     handleUpdateClick(changeForm, detailElementsChange, csrfToken, event);
@@ -5,29 +6,16 @@ export function setupUpdate(updateButton, changeForm, detailElementsChange, csrf
 }
 
 function handleUpdateClick(changeForm, detailElementsChange, csrfToken, event) {
-
   if (!validateForm(changeForm)) {
     return;
   }
+
+  let errorFound = false;
+
   const startDateInput = document.getElementById('change-detail-fecha-inicio');
   const endDateInput = document.getElementById('change-detail-fecha-fin');
 
   const employeesInput = document.getElementById('change-employees');
-  const clientInput = document.getElementById('change-detail-client');
-
-  //let employees = [];
-  //try {
-  //  employees = JSON.parse(employeesInput.value);
-  //} catch (e) {
-  //  employees = [];
-  //}
-  //if (!Array.isArray(employees) || employees.length === 0) {
-  //  event.preventDefault();
-  //  showMessage("Debe seleccionar al menos un empleado.", "danger");
-  //  return;
-  //}
-  //console.log("change-employees", employeesInput.value);
-
   const startDate = new Date(startDateInput.value);
   const endDate = new Date(endDateInput.value);
 
@@ -35,12 +23,50 @@ function handleUpdateClick(changeForm, detailElementsChange, csrfToken, event) {
     event.preventDefault();
     showMessage("La fecha de inicio del evento debe ser anterior a la fecha de finalización", "danger");
     endDateInput.focus();
-  } else {
-    const formData = new FormData(changeForm);
-    performUpdateRequest(formData, detailElementsChange, csrfToken);
+    errorFound = true;
+  }
+
+  if (idClient == "") {
+    event.preventDefault();
+    showMessage("Debe elegir un cliente para el evento", "danger");
+    errorFound = true;
+  }
+
+  let employees = [];
+  try {
+    employees = JSON.parse(employeesInput.value);
+  } catch (e) {
+    employees = [];
+  }
+
+  if (!Array.isArray(employees) || employees.length === 0) {
+    event.preventDefault();
+    showMessage("Debe seleccionar al menos un empleado.", "danger");
+    errorFound = true;
+  }
+
+  if (employees.length > 0) {
+    employees.forEach(employee => {
+      if (employee.salary == "") {
+        event.preventDefault();
+        showMessage("Cada empleado debe tener un salario.", "danger");
+        errorFound = true;
+      }
+
+      if (employee.role == "null") {
+        event.preventDefault();
+        showMessage("Debe asignarle un rol a cada empleado.", "danger");
+        errorFound = true;
+      }
+    });
   }
 
 
+
+  if (!errorFound) {
+    const formData = new FormData(changeForm);
+    performUpdateRequest(formData, detailElementsChange, csrfToken);
+  }
 }
 
 function validateForm(changeForm) {
@@ -52,8 +78,7 @@ function validateForm(changeForm) {
 }
 
 function performUpdateRequest(formData, detailElementsChange, csrfToken) {
-
-
+  setIsFisrtTime(true);
   fetch(`/manage_event/edit_event/`, {
     method: "POST",
     headers: {

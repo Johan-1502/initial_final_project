@@ -1,9 +1,17 @@
+import { editClientInput } from "./main.js";
+
 export let selectedEventName = null;
-let idClient = null;
+export let idClient = null;
+
+export function setIsFisrtTime(value) {
+  isFisrtTime = value;
+}
+
+export let isFisrtTime = true;
 
 export function showDetails(button, detailElementsChange, searchContainer, detailContainer, buttonContainer) {
   const event = extractEventDataFromButton(button);
-
+  editClientInput.value = event.client;
   if (window.selectedEventName == event.name) {
     hideEventDetails(searchContainer, detailContainer, buttonContainer);
   } else {
@@ -54,7 +62,7 @@ function populateEventForm(event, detailElementsChange) {
   console.log(event.client);
   detailElementsChange.idClient.value = event.client;
   idClient = event.client;
-  console.log("Client ID: " + detailElementsChange.idClient.value);
+  console.log("Client ID: " + idClient);
   detailElementsChange.client.onclick = function () {
     console.log("Client ID: " + event.client);
     const popUp = document.getElementById('edit-client-pop-up-main');
@@ -62,15 +70,17 @@ function populateEventForm(event, detailElementsChange) {
     const container = popUp.querySelector("#pop-up-container");
     const tempBtn = document.createElement('button');
 
-    tempBtn.setAttribute('data-dni', event.client);
-    tempBtn.setAttribute('data-name', event.clientName);
-    tempBtn.setAttribute('data-salary', event.clientName);
     const ul = container.querySelector('.selected-employees-list');
     const currentCount = ul.querySelectorAll('li').length;
-    console.log("Current count: " + currentCount);
     if (currentCount != 1) {
-      showEventClient(container, extractEmployeeDataFromButton(tempBtn), tempBtn, true);
+      addClientToPopUp(container)
     }
+
+    //tempBtn.setAttribute('data-dni', event.client);
+    //tempBtn.setAttribute('data-name', event.clientName);
+    //tempBtn.setAttribute('data-salary', event.clientName);
+    //console.log("Current count: " + currentCount);
+    //  showEventClient(container, extractEmployeeDataFromButton(tempBtn), tempBtn, true);
   };
 
   let selectedEmployees = [];
@@ -98,22 +108,24 @@ function populateEventForm(event, detailElementsChange) {
     const ul = container.querySelector('.selected-employees-list');
     const currentCount = ul.querySelectorAll('li').length;
     console.log("Current count: " + currentCount);
-    if (currentCount == 0) {
+    if (currentCount == 0 && isFisrtTime) {
+      isFisrtTime = false;
       fetch(`/manage_event/employees_event/?id=${event.id}`)
         .then(response => response.json())
         .then(data => {
           data.employees.forEach(employee => {
-            tempBtn.setAttribute('data-dni', employee.dni);
-            tempBtn.setAttribute('data-name', employee.name);
-            tempBtn.setAttribute('data-salary', employee.salary);
-            tempBtn.setAttribute('data-role-name', employee.roleName);
-            tempBtn.setAttribute('data-role-id', employee.roleId);
-            showEventEmployees(container, extractEmployeeDataFromButton(tempBtn), tempBtn, false);
+            addEmployeeToPopUp(employee.dni, container, employee.salary, employee.roleName, employee.roleId)
+            //tempBtn.setAttribute('data-dni', employee.dni);
+            //tempBtn.setAttribute('data-name', employee.name);
+            //tempBtn.setAttribute('data-salary', employee.salary);
+            //tempBtn.setAttribute('data-role-name', employee.roleName);
+            //tempBtn.setAttribute('data-role-id', employee.roleId);
+            //showEventEmployees(container, extractEmployeeDataFromButton(tempBtn), tempBtn, false);
           });
         })
-        .catch(error => {
-          console.error("Error al filtrar eventos:", error);
-        });
+        //.catch(error => {
+        //  console.error("Error al filtrar eventos:", error);
+        //});
     }
 
   }
@@ -123,13 +135,30 @@ function populateEventForm(event, detailElementsChange) {
   clearAndSetInitialSelects(event, detailElementsChange);
 }
 
-function selectPersonByDni(dni) {
-  const ul = document.querySelector('.resultPersonList');
+function addClientToPopUp(container) {
+  console.log("addclienttopopup")
+  const dni = editClientInput.value;
+  const ul = container.querySelector('.resultPersonList');
   if (!ul) return;
   const items = ul.querySelectorAll('li');
   items.forEach(li => {
     const btn = li.querySelector('button[data-dni]');
     if (btn && btn.getAttribute('data-dni') === dni) {
+      btn.click(); // Simula el click en el botón
+    }
+  });
+}
+function addEmployeeToPopUp(dni, container, salary, roleName, roleId) {
+  console.log("add employee topopup")
+  const ul = container.querySelector('.resultPersonList');
+  if (!ul) return;
+  const items = ul.querySelectorAll('li');
+  items.forEach(li => {
+    const btn = li.querySelector('button[data-dni]');
+    if (btn && btn.getAttribute('data-dni') === dni) {
+      btn.setAttribute('data-salary', salary);
+      btn.setAttribute('data-role-name', roleName);
+      btn.setAttribute('data-role-id', roleId);
       btn.click(); // Simula el click en el botón
     }
   });
@@ -332,7 +361,7 @@ function createAndAddEmployeeToList(container, employeeData, button, clientValid
   const ul = container.querySelector('.selected-employees-list');
   const li = createEmployeeListItem(employeeData, button, container, clientValidation);
   ul.appendChild(li);
-  searchWidthAdjust(button);
+  searchWidthAdjust(button, false);
 }
 
 function createEmployeeListItem(employeeData, button, container, clientValidation) {
@@ -387,6 +416,7 @@ function putEmployeeControls(employeeData, button, clientValidation) {
     salaryInput.classList.add("mx-3");
     salaryInput.value = employeeData.salary;
     salaryInput.textContent = employeeData.salary;
+    console.log("salario: ",employeeData.salary)
     const select = createRoleSelect(button);
     const role = document.createElement("option");
     role.value = button.getAttribute('data-role-id');
@@ -443,7 +473,7 @@ function createDeleteButton(button, clientValidation) {
   deleteBtn.onclick = function () {
     const li = deleteBtn.closest('li');
     if (li) li.remove();
-    searchWidthAdjust(button);
+    searchWidthAdjust(button, clientValidation);
     if (clientValidation) {
       removeClientData(button);
     }
@@ -464,18 +494,18 @@ function removeClientData(button) {
   }
 }
 
-function searchWidthAdjust(button) {
+function searchWidthAdjust(button, clientValidation) {
   const container = button.closest("#pop-up-container");
   const searchPeopleContainer = button.closest(".search-people-container");
   const ul = container.querySelector('.selected-employees-list');
   console.log(ul);
   const items = ul.querySelectorAll('li').length;
 
-  adjustSearchContainerWidth(searchPeopleContainer, items);
+  adjustSearchContainerWidth(searchPeopleContainer, items, clientValidation);
   adjustSelectedEmployeesListVisibility(container, items);
 }
 
-function adjustSearchContainerWidth(searchPeopleContainer, items) {
+function adjustSearchContainerWidth(searchPeopleContainer, items, clientValidation) {
   searchPeopleContainer.classList.remove('col-md-5', 'col-md-12');
   const container = searchPeopleContainer.closest(".pop-up-select_employees");
   const activatePeopleSelectButton = container.querySelector(".activatePeopleSelectButton");
@@ -485,6 +515,9 @@ function adjustSearchContainerWidth(searchPeopleContainer, items) {
     activatePeopleSelectButton.classList.add("d-none");
     desactivatePeopleSelectButton.classList.remove("d-none");
   } else {
+    if (clientValidation){
+      idClient = "";
+    }
     searchPeopleContainer.classList.add('col-md-12');
     activatePeopleSelectButton.classList.remove("d-none");
     desactivatePeopleSelectButton.classList.add("d-none");
@@ -535,7 +568,7 @@ function populateRoleSelect(select, roles) {
 function deletePersonFromList(button) {
   const li = button.closest('li');
   if (li) li.remove();
-  searchWidthAdjust(button);
+  searchWidthAdjust(button, false);
 }
 
 export function showMessage(type, text, duration = 3000) {

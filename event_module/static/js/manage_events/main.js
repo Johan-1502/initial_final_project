@@ -1,3 +1,5 @@
+export let editClientInput = null;
+
 import { setupEventSearch, setupPeopleSearch } from './search.js';
 import { setupEventCreate, setupPeopleCreate } from './create.js';
 import { setupUpdate, setupDelete, showMessage } from './update_delete.js';
@@ -5,7 +7,6 @@ import { showDetails, setupPeopleSelect, addEmployeeToSelectedList, saveChangedE
 import { getClientId } from './details.js'
 
 let createClientInput = null;
-let editClientInput = null;
 
 document.addEventListener("DOMContentLoaded", () => {
   handleSessionMessage();
