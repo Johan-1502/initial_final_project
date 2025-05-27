@@ -213,3 +213,10 @@ def employeesOfAnEvent(request):
             for employee in employees
         ]
         return JsonResponse({"employees": data})
+
+def eventReport(request):
+    print("Event Report")
+    if request.method == "GET":
+        event_id = request.GET.get("id")
+        employees = services.getEmployeesDataByEvent(event_id)
+        return JsonResponse({"employees": employees})

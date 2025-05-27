@@ -61,8 +61,6 @@ function handleUpdateClick(changeForm, detailElementsChange, csrfToken, event) {
     });
   }
 
-
-
   if (!errorFound) {
     const formData = new FormData(changeForm);
     performUpdateRequest(formData, detailElementsChange, csrfToken);

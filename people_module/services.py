@@ -74,11 +74,11 @@ def getEventHistoryByPerson(dni):
         history = []
         for worker in workers:
             history.append({
-                "Nombre del evento": worker.event.name,
-                "Fecha de inicio": worker.event.startDate.strftime('%Y/%m/%d') if worker.event.startDate else "",
-                "Fecha de finalización": worker.event.endDate.strftime('%Y/%m/%d') if worker.event.endDate else "",
-                "Salario": str(worker.salary),
-                "Rol": worker.role.name,
+                "eventName": worker.event.name,
+                "startDate": worker.event.startDate.strftime('%Y/%m/%d') if worker.event.startDate else "",
+                "endDate": worker.event.endDate.strftime('%Y/%m/%d') if worker.event.endDate else "",
+                "salary": str(worker.salary),
+                "role": worker.role.name,
             })
         return history
     except Person.DoesNotExist:

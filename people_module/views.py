@@ -111,3 +111,9 @@ def filter_people(request):
         ]
         return JsonResponse({"people": data})
 
+def personReport(request):
+    print("Person Report")
+    if request.method == "GET":
+        dni_person = request.GET.get("dni")
+        events = services.getEventHistoryByPerson(dni_person)
+        return JsonResponse({"employees": events})

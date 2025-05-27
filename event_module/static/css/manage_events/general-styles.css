@@ -45,9 +45,12 @@ html {
 }
 
 @keyframes pulseIcon {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: scale(1);
   }
+
   50% {
     transform: scale(1.6);
   }
@@ -84,7 +87,7 @@ html {
   opacity: 0;
   pointer-events: none;
   transform: scale(1);
-  content: ""; 
+  content: "";
 }
 
 .btn-see::after {
@@ -97,6 +100,34 @@ html {
 
 .btn-minus::after {
   content: "\f068";
+}
+
+.btn-report-blue {
+  background-color: rgb(0, 123, 167);
+  border: 2px solid rgb(0, 105, 143);
+  color: white;
+  font-weight: bold;
+  transition: all 0.3s;
+
+  padding: 12px 24px;
+  border-radius: 2vh;
+  font-size: 15px;
+  font-weight: bold;
+  transition: all 0.3s ease-in-out;
+  cursor: pointer;
+  align-self: center;
+  overflow: hidden;
+
+  width: 100%;
+  display: block;
+  box-sizing: border-box;
+}
+
+.btn-report-blue:hover,
+.btn-report-blue:focus {
+  background-color: rgb(0, 105, 143);
+  color: #fff;
+  border-color: #00c2dc;
 }
 
 .btn-confirm::after {
@@ -243,6 +274,7 @@ select.control-form {
   position: relative;
   transition: all 0.3s ease-in-out;
 }
+
 .search-people-container,
 #search-container {
   background-color: #f8f9fa;
@@ -257,25 +289,33 @@ select.control-form {
 #create-client-pop-up-main,
 #edit-client-pop-up-main,
 #create-pop-up-main,
-#edit-pop-up-main{
+#edit-pop-up-main,
+#pop-up-report {
   position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 1vh;
-  background: rgba(0,0,0,0.5); /* Fondo oscuro opcional */
+  background: rgba(0, 0, 0, 0.5);
+  /* Fondo oscuro opcional */
   z-index: 90;
 }
 
-#pop-up-container{
+#pop-up-container {
   padding: 2vh 3vh 3vh 6vh;
-  background: white; border-radius: 1vw;
-  width: 95%; height: 90%; 
-  overflow-y: auto; max-height: 100%;
+  background: white;
+  border-radius: 1vw;
+  width: 95%;
+  height: 90%;
+  overflow-y: auto;
+  max-height: 100%;
 }
 
-#search-people-container{
+#search-people-container {
   background-color: #f8f9fa;
   padding: 1.5rem 2rem;
   border-radius: 0.5rem;
@@ -298,7 +338,7 @@ select.control-form {
   text-decoration: none;
 }
 
-.employee-container{
+.employee-container {
   border-radius: 1vh;
   border: #b9b9b9 solid 2px;
 }
@@ -319,10 +359,13 @@ select.control-form {
 }
 
 @keyframes line-title-animation {
-  0%, 100% {
+
+  0%,
+  100% {
     width: 15%;
     opacity: 1;
   }
+
   50% {
     width: 80%;
     opacity: 0.2;
@@ -359,7 +402,7 @@ select.control-form {
   animation: eye-animation 5s linear infinite backwards;
 }
 
-.delete-btn{
+.delete-btn {
   background-color: #f8f9fa;
   border: 2px solid #bd0000;
   color: #ff0000;
@@ -384,7 +427,7 @@ select.control-form {
   align-items: center;
 }
 
-.delete-btn:hover{
+.delete-btn:hover {
   background-color: #a80000;
   color: white;
   box-shadow: 0 0 10px rgba(124, 1, 1, 0.4);
@@ -419,7 +462,7 @@ select.control-form {
 }
 
 .view-button:focus,
-.view-button:hover{
+.view-button:hover {
   transform: scale(1.2);
   animation: none;
   background-color: #0d6efd;
@@ -428,10 +471,22 @@ select.control-form {
 }
 
 @keyframes eye-animation {
-  12%, 16%, 60%, 64%, 70%, 74%, 85%, 89% {
+
+  12%,
+  16%,
+  60%,
+  64%,
+  70%,
+  74%,
+  85%,
+  89% {
     transform: scaleY(1);
   }
-  14%, 62%, 72%, 87% {
+
+  14%,
+  62%,
+  72%,
+  87% {
     transform: scaleY(0.1);
   }
 }
@@ -466,10 +521,13 @@ select.control-form {
 }
 
 @keyframes expandContract {
-  0%, 100% {
+
+  0%,
+  100% {
     width: 15%;
     opacity: 0;
   }
+
   50% {
     width: 95%;
     opacity: 0.3;
@@ -530,15 +588,19 @@ select.control-form {
   0% {
     transform: translateY(0.5vh) rotateZ(0deg);
   }
+
   15% {
     transform: rotateZ(20deg) scale(1.3);
   }
+
   30% {
     transform: rotateZ(0deg) scale(1);
   }
+
   50% {
     transform: rotateY(0deg) translateY(-0.5vh);
   }
+
   100% {
     transform: rotateY(360deg) rotateZ(0deg) translateY(0.5vh);
   }
@@ -631,6 +693,47 @@ h2,
 h3 {
   color: #2c3e50;
   font-weight: 600;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+thead {
+  color: #547793;
+  /* Azul grisáceo */
+  font-weight: bold;
+}
+
+th,
+td {
+  padding: 10px 15px;
+  text-align: left;
+  border-bottom: 1px solid #ccc;
+}
+
+td {
+  color: #333;
+}
+
+.table-scroll-container {
+  max-height: 380px;
+  overflow-y: auto;
+  width: 100%;
+}
+
+.table-scroll-container thead th {
+  position: sticky;
+  top: 0;
+  background: #f8f9fa; /* O el color de fondo de tu tabla */
+  z-index: 2;
+}
+
+.fecha {
+  font-size: 16px;
+  color: #444;
 }
 
 @media (max-width: 767.98px) {

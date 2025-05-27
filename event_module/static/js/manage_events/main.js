@@ -55,10 +55,14 @@ function getDOMElements() {
     editSelectEmployeeButton: document.getElementById('change-pop-up-detail-employees'),
     createSelectClientButton: document.getElementById('create-detail-client'),
     createSelectEmployeeButton: document.getElementById('create-pop-up-detail-employees'),
+    showReportButton: document.getElementById('change-pop-up-report'),
+    closeReportButton: document.getElementById('close-pop-up-report'),
+    exportReportButton: document.getElementById('export-pdf-btn'),
     popUpEditClient: document.getElementById("edit-client-pop-up-main"),
     popUpEdit: document.getElementById("edit-pop-up-main"),
     popUpCreateClient: document.getElementById("create-client-pop-up-main"),
     popUpCreate: document.getElementById("create-pop-up-main"),
+    popUpReport: document.getElementById("pop-up-report"),
     closeEditClientPopUp: document.getElementById("close-edit-client-pop-up"),
     closeEditPopUp: document.getElementById("close-edit-pop-up"),
     closeCreateClientPopUp: document.getElementById("close-create-client-pop-up"),
@@ -144,6 +148,10 @@ function setupClosePopUpHandlers(elements) {
     closePopUp(elements.popUpEditClient);
   });
 
+  elements.closeReportButton.addEventListener('click', () => {
+    closePopUp(elements.popUpReport);
+  });
+
   elements.closeEditPopUp.addEventListener('click', () => {
     closePopUp(elements.popUpEdit);
   });
@@ -151,11 +159,11 @@ function setupClosePopUpHandlers(elements) {
   elements.closeCreateClientPopUp.addEventListener('click', () => {
     closePopUp(elements.popUpCreateClient);
   });
-  
+
   elements.closeCreatePopUp.addEventListener('click', () => {
     closePopUp(elements.popUpCreate);
   });
-  
+
   elements.confirmEditClientPopUp.addEventListener('click', () => {
     console.log("cerrando popup de editar cliente");
     console.log(getClientId());
@@ -175,7 +183,7 @@ function setupClosePopUpHandlers(elements) {
     createClientInput.value = getClientId();
     closePopUp(elements.popUpCreateClient);
   });
-  
+
   elements.confirmCreatePopUp.addEventListener('click', () => {
     saveSelectedEmployees();
     closePopUp(elements.popUpCreate);
@@ -198,6 +206,78 @@ function setupOpenPopUpHandlers(elements) {
   elements.createSelectEmployeeButton.addEventListener('click', () => {
     openPopUp(elements.popUpCreate);
   });
+
+  elements.exportReportButton.addEventListener('click', () => {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    doc.setFontSize(18);
+    doc.text('Informe de Nómina', 14, 20);
+
+    const fecha = document.getElementById('fecha-actual').textContent;
+    const evento = document.getElementById('evento-nombre').textContent;
+    const cliente = document.getElementById('cliente-nombre').textContent;
+    doc.setFontSize(12);
+    doc.text(`Fecha de informe: ${fecha}`, 14, 30);
+    doc.text(`Evento: ${evento}`, 14, 38);
+    doc.text(`Cliente: ${cliente}`, 14, 46);
+
+    doc.autoTable({
+        html: '#report-table',
+        startY: 55,
+        theme: 'grid',
+        headStyles: { fillColor: [0, 157, 204] }
+    });
+
+    doc.save('informe_nomina.pdf');
+  });
+
+  elements.showReportButton.addEventListener('click', () => {
+    console.log("Mostrando reporte");
+    const fecha = new Date();
+    const opciones = { year: 'numeric', month: 'long', day: 'numeric' };
+    document.getElementById('fecha-actual').textContent =
+      fecha.toLocaleDateString('es-ES', opciones);
+
+    const idEvent = document.getElementById('change-detail-id').value;
+    console.log("ID del evento:", idEvent);
+
+    const nameEvent = document.getElementById('change-detail-nombre').value;
+    document.getElementById('evento-nombre').textContent = nameEvent;
+
+    const nameClient = document.getElementById('change-detail-client').textContent.trim();
+    document.getElementById('cliente-nombre').textContent = nameClient;
+
+    const tbody = document.querySelector('#report-table tbody');
+    tbody.innerHTML = ''; // Limpiar la tabla antes de agregar nuevos datos
+    fetch(`/manage_event/event_report/?id=${idEvent}`)
+      .then(response => response.json())
+      .then(data => {
+        data.employees.forEach(employee => {
+          const newRow = document.createElement('tr');
+          // Formatear el salario como número con separador de miles y dos decimales
+          const formattedSalary = Number(employee.salary).toLocaleString('es-ES', {
+            style: 'currency',
+            currency: 'COP',
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+          });
+          newRow.innerHTML = `
+        <td>${employee.id}</td>
+        <td>${employee.name}</td>
+        <td>${employee.role}</td>
+        <td>${formattedSalary}</td>
+        `;
+          tbody.appendChild(newRow);
+        });
+      })
+      .catch(error => {
+        console.error("Error al filtrar eventos:", error);
+      });
+
+
+    openPopUp(elements.popUpReport);
+  });
 }
 
 function closePopUp(popUpElement) {
@@ -207,6 +287,7 @@ function closePopUp(popUpElement) {
 function openPopUp(popUpElement) {
   popUpElement.classList.remove("d-none");
 }
+
 
 function setupAllFunctionalities(elements, detailElements, csrfToken) {
   setupSearchFunctionalities(elements);

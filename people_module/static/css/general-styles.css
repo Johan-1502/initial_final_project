@@ -546,6 +546,99 @@ h3 {
   font-weight: 600;
 }
 
+#pop-up-report {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1vh;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 90;
+}
+
+.btn-report-blue {
+  background-color: rgb(0, 123, 167);
+  border: 2px solid rgb(0, 105, 143);
+  color: white;
+  font-weight: bold;
+  transition: all 0.3s;
+
+  padding: 12px 24px;
+  border-radius: 2vh;
+  font-size: 15px;
+  font-weight: bold;
+  transition: all 0.3s ease-in-out;
+  cursor: pointer;
+  align-self: center;
+  overflow: hidden;
+
+  width: 100%;
+  display: block;
+  box-sizing: border-box;
+}
+
+.btn-report-blue:hover,
+.btn-report-blue:focus {
+  background-color: rgb(0, 105, 143);
+  color: #fff;
+  border-color: #00c2dc;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+thead {
+  color: #547793;
+  /* Azul grisáceo */
+  font-weight: bold;
+}
+
+th,
+td {
+  padding: 10px 15px;
+  text-align: left;
+  border-bottom: 1px solid #ccc;
+}
+
+td {
+  color: #333;
+}
+
+.table-scroll-container {
+  max-height: 380px;
+  overflow-y: auto;
+  width: 100%;
+}
+
+.table-scroll-container thead th {
+  position: sticky;
+  top: 0;
+  background: #f8f9fa; /* O el color de fondo de tu tabla */
+  z-index: 2;
+}
+
+.fecha {
+  font-size: 16px;
+  color: #444;
+}
+
+#pop-up-container {
+  padding: 2vh 3vh 3vh 6vh;
+  background: white;
+  border-radius: 1vw;
+  width: 95%;
+  height: 90%;
+  overflow-y: auto;
+  max-height: 100%;
+}
+
 @media (max-width: 767.98px) {
   .main-panel {
     flex-direction: column;

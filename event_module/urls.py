@@ -12,4 +12,5 @@ urlpatterns = [
     path('people/', views.peopleToSend, name='people'),
     path('add_employee/', views.add_employee, name='add_employee'),
     path('employees_event/', views.employeesOfAnEvent, name='employees_event'),
+    path('event_report/', views.eventReport, name='event_report'),
 ]
