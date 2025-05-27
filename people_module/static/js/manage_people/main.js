@@ -36,7 +36,7 @@ window.addEventListener('DOMContentLoaded', () => {
     const doc = new jsPDF();
 
     doc.setFontSize(18);
-    doc.text('Informe de Nómina', 14, 20);
+    doc.text('Informe de Historial Laboral', 14, 20);
 
     const fecha = document.getElementById('fecha-actual').textContent;
     doc.setFontSize(12);
@@ -49,7 +49,7 @@ window.addEventListener('DOMContentLoaded', () => {
       headStyles: { fillColor: [0, 157, 204] }
     });
 
-    doc.save('informe_nomina.pdf');
+    doc.save('informe_historial_laboral.pdf');
   });
 
   showReportButton.addEventListener('click', () => {
