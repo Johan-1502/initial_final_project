@@ -407,18 +407,29 @@ function putEmployeeControls(employeeData, button, clientValidation) {
 
   if (!clientValidation) {
     const salaryInput = document.createElement("input");
-    salaryInput.type = "number"; // o "text", "date", etc.
+    salaryInput.type = "number";
     salaryInput.name = "salary";
     salaryInput.id = "salaryInput";
     salaryInput.placeholder = "Ingrese el salario";
-    salaryInput.classList.add("form-control");
-    salaryInput.classList.add("control-form");
-    salaryInput.classList.add("mx-3");
+    salaryInput.classList.add("form-control", "control-form", "mx-3");
     salaryInput.value = employeeData.salary;
+    salaryInput.style.width = "50%";
     salaryInput.textContent = employeeData.salary;
     console.log("salario: ",employeeData.salary)
     const select = createRoleSelect(button);
     const role = document.createElement("option");
+    role.value = button.getAttribute('data-role-id');
+    role.textContent = button.getAttribute('data-role-name');
+    select.appendChild(role);
+    div.appendChild(salaryInput);
+    div.appendChild(select);
+    if (window.$ && typeof $(select).select2 === "function") {
+      $(select).select2({
+        tags: true,
+        placeholder: "Selecciona o escribe un rol",
+        width: '30%'
+      });
+    }
     role.value = button.getAttribute('data-role-id');
     role.textContent = button.getAttribute('data-role-name');
     select.appendChild(role);
