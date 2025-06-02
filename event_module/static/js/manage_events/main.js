@@ -16,6 +16,19 @@ window.addEventListener('DOMContentLoaded', () => {
   initializeEventManagement();
 });
 
+document.addEventListener('DOMContentLoaded', function () {
+  // Botón cerrar (equis) para todos los pop-ups de lugar
+  document.querySelectorAll('button[id^="close-"][id$="-pop-up-place"]').forEach(function(closeBtn) {
+    closeBtn.addEventListener('click', function() {
+      const prefix = closeBtn.id.replace('close-', '').replace('-pop-up-place', '');
+      const popUp = document.getElementById(prefix + '-pop-up-place');
+      if (popUp) {
+        popUp.classList.add('d-none');
+      }
+    });
+  });
+});
+
 function handleSessionMessage() {
   const message = sessionStorage.getItem("successMessage");
   if (message) {
