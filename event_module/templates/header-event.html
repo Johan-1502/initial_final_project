@@ -13,6 +13,10 @@
     <link rel="stylesheet" href="{% static 'css/manage_events/general-styles.css' %}">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 </head>
 
 <body>
@@ -38,6 +42,8 @@
             {% include 'pop-up-window.html' with prefix="edit-client" %}
             {% include 'pop-up-window.html' with prefix="create-client" %}
             {% include 'pop-up-report.html' %}
+            {% include 'pop-up-place.html' with prefix="edit" %}
+            {% include 'pop-up-place.html' with prefix="create" %}
             <div id="js-messages-container" class="message-main row justify-content-center"
                 style="text-align: center; font-weight: bold; position:fixed; padding-left: 10%; padding-right: 10%; width:100%; margin-top:2vh; z-index: 100;">
             </div>

@@ -14,10 +14,17 @@
 <input id="{{ prefix }}-detail-fecha-fin" name="endDate" type="date" class="control-form form-control mb-2" required>
 
 <label for="{{ prefix }}-selectPlace"><strong>Lugar:</strong></label>
-<select id="{{ prefix }}-selectPlace" name="place" class="control-form form-control mb-2" required></select>
+<div style="display: flex; gap: 8px; align-items: center;">
+  <select id="{{ prefix }}-selectPlace" name="place" class="control-form form-control mb-2" required></select>
+  <button id="{{ prefix }}-place" type="button" class="mb-2 btn-icon-plus btn-icon-plus-blue">+</button>
+</div>
 
 <label for="{{ prefix }}-selectType"><strong>Tipo:</strong></label>
-<select id="{{ prefix }}-selectType" name="typeEvent" class="control-form form-control mb-2" required></select>
+<div style="display: flex; gap: 8px; align-items: center;">
+  <select id="{{ prefix }}-selectType" name="typeEvent" class="control-form form-control mb-2" required></select>
+  <input id="{{ prefix }}-write-type" name="typeWritten" type="text" class="control-form form-control mb-2 d-none">
+  <button id="{{ prefix }}-type" type="button" class="mb-2 btn-icon-plus btn-icon-plus-blue">+</button>
+</div>
 
 <label for="{{ prefix }}-detail-client"><strong>Cliente:</strong></label>
 <button id="{{ prefix }}-detail-client" type="button" class="control-form form-control mb-2" required>
@@ -27,7 +34,7 @@
   Ver cliente
   {% endif %}</button>
 <label><strong>Empleados:</strong></label>
-<button id="{{ prefix }}-pop-up-detail-employees" type="button" class="control-form form-control mb-2" required> 
+<button id="{{ prefix }}-pop-up-detail-employees" type="button" class="control-form form-control mb-2" required>
   {% if prefix == "create"%}
   Seleccionar empleados
   {% else %}
@@ -35,7 +42,8 @@
   {% endif %}
 </button>
 {% if prefix == "change" %}
-<button id="{{ prefix }}-pop-up-report" type="button" class="mb-2 mt-4 btn-report-blue">Generar informe de nómina</button>
+<button id="{{ prefix }}-pop-up-report" type="button" class="mb-2 mt-4 btn-report-blue">Generar informe de
+  nómina</button>
 {% endif %}
 <input type="hidden" name="client" value="" id="{{ prefix }}-id-client">
 <input type="hidden" name="employees" value="" id="{{ prefix }}-employees">

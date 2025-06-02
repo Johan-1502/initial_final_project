@@ -123,6 +123,45 @@ html {
   box-sizing: border-box;
 }
 
+.btn-icon-plus-blue{
+  background-color: rgb(0, 123, 167);
+  border: 2px solid rgb(0, 105, 143);
+}
+
+.btn-icon-plus-red{
+  background-color: rgb(167, 0, 0);
+  border: 2px solid rgb(143, 0, 0);
+}
+
+.btn-icon-plus {
+  color: white;
+  font-size: 20px;
+  font-weight: bold;
+  border-radius: 8px;
+  padding-bottom: 5px;
+  padding-top: 3px;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.btn-icon-plus-blue:hover {
+  background-color: rgb(0, 105, 143);
+  color: #ffffff;
+  transform: scale(1.1);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.btn-icon-plus-red:hover {
+  background-color: rgb(143, 0, 0);
+  color: #ffffff;
+  transform: scale(1.1);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+
 .btn-report-blue:hover,
 .btn-report-blue:focus {
   background-color: rgb(0, 105, 143);
@@ -290,7 +329,9 @@ select.control-form {
 #edit-client-pop-up-main,
 #create-pop-up-main,
 #edit-pop-up-main,
-#pop-up-report {
+#pop-up-report,
+#edit-pop-up-place,
+#create-pop-up-place {
   position: fixed;
   top: 0;
   left: 0;
@@ -311,6 +352,16 @@ select.control-form {
   border-radius: 1vw;
   width: 95%;
   height: 90%;
+  overflow-y: auto;
+  max-height: 100%;
+}
+
+#pop-up-container-place {
+  padding: 2vh 3vh 3vh 6vh;
+  background: white;
+  border-radius: 1vw;
+  width: 40%;
+  height: 65%;
   overflow-y: auto;
   max-height: 100%;
 }
@@ -727,7 +778,8 @@ td {
 .table-scroll-container thead th {
   position: sticky;
   top: 0;
-  background: #f8f9fa; /* O el color de fondo de tu tabla */
+  background: #f8f9fa;
+  /* O el color de fondo de tu tabla */
   z-index: 2;
 }
 
