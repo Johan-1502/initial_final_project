@@ -16,6 +16,19 @@ window.addEventListener('DOMContentLoaded', () => {
   initializeEventManagement();
 });
 
+document.addEventListener('DOMContentLoaded', function () {
+  // Botón cerrar (equis) para todos los pop-ups de lugar
+  document.querySelectorAll('button[id^="close-"][id$="-pop-up-place"]').forEach(function(closeBtn) {
+    closeBtn.addEventListener('click', function() {
+      const prefix = closeBtn.id.replace('close-', '').replace('-pop-up-place', '');
+      const popUp = document.getElementById(prefix + '-pop-up-place');
+      if (popUp) {
+        popUp.classList.add('d-none');
+      }
+    });
+  });
+});
+
 function handleSessionMessage() {
   const message = sessionStorage.getItem("successMessage");
   if (message) {
@@ -30,6 +43,7 @@ function initializeEventManagement() {
   const csrfToken = getCSRFToken();
 
   setupEventDetailsHandler(elements.detailElementsChange, elements.searchContainer, elements.detailContainer, elements.buttonContainer);
+  setupCreateButtonsHandlers(elements);
   setupPopUpHandlers(elements);
   setupAllFunctionalities(elements, detailElements, csrfToken);
 }
@@ -52,6 +66,8 @@ function getDOMElements() {
     detailContainer: document.getElementById("detail-container"),
     deleteButton: document.getElementById("delete-button"),
     editSelectClientButton: document.getElementById('change-detail-client'),
+    changePlaceButton: document.getElementById('change-place'),
+    createPlaceButton: document.getElementById('create-place'),
     editSelectEmployeeButton: document.getElementById('change-pop-up-detail-employees'),
     createSelectClientButton: document.getElementById('create-detail-client'),
     createSelectEmployeeButton: document.getElementById('create-pop-up-detail-employees'),
@@ -63,6 +79,8 @@ function getDOMElements() {
     popUpCreateClient: document.getElementById("create-client-pop-up-main"),
     popUpCreate: document.getElementById("create-pop-up-main"),
     popUpReport: document.getElementById("pop-up-report"),
+    editPopUpPlace: document.getElementById("edit-pop-up-place"),
+    createPopUpPlace: document.getElementById("create-pop-up-place"),
     closeEditClientPopUp: document.getElementById("close-edit-client-pop-up"),
     closeEditPopUp: document.getElementById("close-edit-pop-up"),
     closeCreateClientPopUp: document.getElementById("close-create-client-pop-up"),
@@ -98,6 +116,8 @@ function getCreateDetailElements() {
     client: document.getElementById('create-detail-client'),
     selectPlace: document.getElementById('create-selectPlace'),
     selectType: document.getElementById('create-selectType'),
+    createTypeButton: document.getElementById('create-type'),
+    typeWritten: document.getElementById('create-write-type'),
     idClient: document.getElementById('create-id-client'),
   };
 }
@@ -111,6 +131,8 @@ function getChangeDetailElements() {
     client: document.getElementById('change-detail-client'),
     selectPlace: document.getElementById('change-selectPlace'),
     selectType: document.getElementById('change-selectType'),
+    createTypeButton: document.getElementById('change-type'),
+    typeWritten: document.getElementById('change-write-type'),
     idClient: document.getElementById('change-id-client'),
     employees: document.getElementById('change-pop-up-detail-employees'),
   };
@@ -139,8 +161,120 @@ function setupEventDetailsHandler(detailElementsChange, searchContainer, detailC
 }
 
 function setupPopUpHandlers(elements) {
+  setupFormPlace(elements.editPopUpPlace, document.getElementById('edit-form-place'), elements.detailElementsChange);
+  setupFormPlace(elements.createPopUpPlace, document.getElementById('create-form-place'), elements.detailElementsCreate);
   setupClosePopUpHandlers(elements);
   setupOpenPopUpHandlers(elements);
+}
+
+function setupCreateButtonsHandlers(elements) {
+
+  elements.detailElementsChange.createTypeButton.addEventListener('click', () => {
+    if (elements.detailElementsChange.createTypeButton.classList.contains('btn-icon-plus-blue')) {
+      elements.detailElementsChange.createTypeButton.classList.remove("btn-icon-plus-blue");
+      elements.detailElementsChange.createTypeButton.classList.add("btn-icon-plus-red");
+      elements.detailElementsChange.createTypeButton.textContent = 'x';
+      elements.detailElementsChange.selectType.classList.add("d-none");
+      elements.detailElementsChange.typeWritten.classList.remove("d-none");
+      elements.detailElementsChange.typeWritten.required = true;
+      elements.detailElementsChange.typeWritten.focus();
+    }else{
+      elements.detailElementsChange.createTypeButton.classList.add("btn-icon-plus-blue");
+      elements.detailElementsChange.createTypeButton.classList.remove("btn-icon-plus-red");
+      elements.detailElementsChange.createTypeButton.textContent = '+';
+      elements.detailElementsChange.typeWritten.textContent = "";
+      elements.detailElementsChange.typeWritten.required = false;
+      elements.detailElementsChange.typeWritten.classList.add("d-none");
+      elements.detailElementsChange.selectType.classList.remove("d-none");
+      elements.detailElementsChange.selectType.focus();
+    }
+  });
+
+  elements.detailElementsCreate.createTypeButton.addEventListener('click', () => {
+    if (elements.detailElementsCreate.createTypeButton.classList.contains('btn-icon-plus-blue')) {
+      elements.detailElementsCreate.createTypeButton.classList.remove("btn-icon-plus-blue");
+      elements.detailElementsCreate.createTypeButton.classList.add("btn-icon-plus-red");
+      elements.detailElementsCreate.createTypeButton.textContent = 'x';
+      elements.detailElementsCreate.selectType.classList.add("d-none");
+      elements.detailElementsCreate.typeWritten.classList.remove("d-none");
+      elements.detailElementsCreate.typeWritten.required = true;
+      elements.detailElementsCreate.typeWritten.focus();
+    }else{
+      elements.detailElementsCreate.createTypeButton.classList.add("btn-icon-plus-blue");
+      elements.detailElementsCreate.createTypeButton.classList.remove("btn-icon-plus-red");
+      elements.detailElementsCreate.createTypeButton.textContent = '+';
+      elements.detailElementsCreate.typeWritten.textContent = "";
+      elements.detailElementsCreate.typeWritten.required = false;
+      elements.detailElementsCreate.typeWritten.classList.add("d-none");
+      elements.detailElementsCreate.selectType.classList.remove("d-none");
+      elements.detailElementsCreate.selectType.focus();
+    }
+  });
+
+}
+
+function getCookie(name) {
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== '') {
+    const cookies = document.cookie.split(';');
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      if (cookie.substring(0, name.length + 1) === (name + '=')) {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        break;
+      }
+    }
+  }
+  return cookieValue;
+}
+
+function setupFormPlace(popUp, form, detailElements) {
+  const formPlace = form;
+  if (formPlace) {
+    formPlace.addEventListener('submit', function (event) {
+      event.preventDefault();
+      const formData = new FormData(formPlace);
+
+      fetch('add_place/', {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest',
+          'X-CSRFToken': getCookie('csrftoken')
+        }
+      })
+        .then(response => response.json())
+        .then(placeSent => {
+          const place = document.createElement("option");
+          place.value = placeSent.id;
+          place.textContent = placeSent.name;
+          console.log("lugar creado: " + placeSent.id + placeSent.name)
+          while (detailElements.selectPlace.firstChild) {
+            detailElements.selectPlace.removeChild(detailElements.selectPlace.firstChild);
+          }
+          detailElements.selectPlace.appendChild(place);
+          fetch(`/manage_event/places/`)
+            .then(response => response.json())
+            .then(data => {
+              data.places.forEach(place => {
+                if (!(place.name == placeSent.name)) {
+                  console.log("lugar enviado: " + place.id + place.name)
+                  const option = document.createElement("option");
+                  option.value = place.id;
+                  option.textContent = place.name;
+                  detailElements.selectPlace.appendChild(option);
+                }
+              });
+            })
+            .catch(error => {
+              console.error("Error al filtrar eventos:", error);
+            });
+        });
+      console.log("Metodo finalizado")
+      closePopUp(popUp);
+    });
+
+  }
 }
 
 function setupClosePopUpHandlers(elements) {
@@ -195,6 +329,14 @@ function setupOpenPopUpHandlers(elements) {
     openPopUp(elements.popUpEditClient);
   });
 
+  elements.changePlaceButton.addEventListener('click', () => {
+    openPopUp(elements.editPopUpPlace);
+  });
+
+  elements.createPlaceButton.addEventListener('click', () => {
+    openPopUp(elements.createPopUpPlace);
+  });
+
   elements.editSelectEmployeeButton.addEventListener('click', () => {
     openPopUp(elements.popUpEdit);
   });
@@ -223,10 +365,10 @@ function setupOpenPopUpHandlers(elements) {
     doc.text(`Cliente: ${cliente}`, 14, 46);
 
     doc.autoTable({
-        html: '#report-table',
-        startY: 55,
-        theme: 'grid',
-        headStyles: { fillColor: [0, 157, 204] }
+      html: '#report-table',
+      startY: 55,
+      theme: 'grid',
+      headStyles: { fillColor: [0, 157, 204] }
     });
 
     doc.save('informe_nomina.pdf');

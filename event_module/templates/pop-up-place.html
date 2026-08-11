@@ -1,0 +1,23 @@
+{% csrf_token %}
+<div id="{{ prefix }}-pop-up-place" class="d-none report">
+  <div id="pop-up-container-place">
+    <div class="mb-3 d-flex justify-content-start">
+      <button type="button" id="close-{{ prefix }}-pop-up-place" class="btn btn-outline-secondary btn-back">
+        <i class="fa-solid fa-xmark fa-beat"></i>
+      </button>
+    </div>
+    <h1>Crear Lugar</h1>
+    <form id="{{ prefix }}-form-place">
+      {% csrf_token %}
+      <label for="{{ prefix }}-write-city">Ciudad: </label>
+      <input id="{{ prefix }}-write-city" name="city" type="text" class="control-form form-control mb-2 " required>
+      <label for="{{ prefix }}-write-direction">Dirección: </label>
+      <input id="{{ prefix }}-write-direction" name="direction" type="text" class="control-form form-control mb-2 " required>
+      <label for="{{ prefix }}-write-placeName">Nombre del lugar: </label>
+      <input id="{{ prefix }}-write-placeName" name="placeName" type="text" class="control-form form-control mb-2 " required>
+      <div class="d-flex justify-content-center">
+        <button type="submit" class="mb-2 mt-4 btn-report-blue w-100">Crear</button>
+      </div>
+    </form>
+  </div>
+</div>

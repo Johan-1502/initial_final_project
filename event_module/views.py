@@ -40,7 +40,9 @@ def manage_event(request):
     people = people_services.getAllPeople()
 
     if request.method == "GET":
-        return render(request, "manage_event.html", {"events": events, "people": people})
+        return render(
+            request, "manage_event.html", {"events": events, "people": people}
+        )
 
     form_type = request.POST.get("form_type")
     if form_type == "create_person":
@@ -52,9 +54,14 @@ def manage_event(request):
             employees_json = request.POST.get("employees")
             employees = json.loads(employees_json) if employees_json else []
             if any(employee.get("salary", "") == "" for employee in employees):
-                messages.error(request, "Debe asignarle un salario a cada empleado del evento.")
+                messages.error(
+                    request, "Debe asignarle un salario a cada empleado del evento."
+                )
             else:
-                messages.error(request, "La fecha de finalización no puede ser anterior a la fecha de inicio.")
+                messages.error(
+                    request,
+                    "La fecha de finalización no puede ser anterior a la fecha de inicio.",
+                )
             return redirect("/manage_event/")
         except Exception as e:
             employees_json = request.POST.get("employees")
@@ -63,7 +70,9 @@ def manage_event(request):
 
             employees = json.loads(employees_json) if employees_json else []
             if employees_json and len(employees) == 0:
-                messages.error(request, "Debe seleccionar al menos un empleado para el evento.")
+                messages.error(
+                    request, "Debe seleccionar al menos un empleado para el evento."
+                )
                 errorFound = True
 
             if any(employee.get("role") == "null" for employee in employees):
@@ -75,7 +84,9 @@ def manage_event(request):
                 errorFound = True
 
             if not employees_json:
-                messages.error(request, "Debe seleccionar al menos un empleado para el evento.")
+                messages.error(
+                    request, "Debe seleccionar al menos un empleado para el evento."
+                )
                 errorFound = True
 
             if not errorFound:
@@ -98,15 +109,6 @@ def edit_event(request):
     try:
         if "id" not in request.POST:
             return JsonResponse({"success": False, "error": "Falta el DNI"})
-
-        #EJEMPLO, borrar luego
-        event_id = 2
-        empleados = services.getEmployeesDataByEvent(event_id)
-        print("--------------------------------------")
-        print("Empleados del evento con id=2:")
-        for empleado in empleados:
-            print(empleado)
-        #FIN EJEMPLO
 
         services.editEvent(request)
         updated_event = services.getEventById(request.POST["id"])
@@ -214,9 +216,18 @@ def employeesOfAnEvent(request):
         ]
         return JsonResponse({"employees": data})
 
+
 def eventReport(request):
     print("Event Report")
     if request.method == "GET":
         event_id = request.GET.get("id")
         employees = services.getEmployeesDataByEvent(event_id)
         return JsonResponse({"employees": employees})
+
+
+def createPlace(request):
+    place = services.createPlace(request)
+    print("Nombre lugar creado: " + str(place.id))
+    return JsonResponse(
+        {"name": place.name, "id": str(place.id)}
+    )

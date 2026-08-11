@@ -18,29 +18,37 @@ def createEvent(request):
     print(request.POST["place"])
     print(request.POST["typeEvent"])
     print(request.POST["client"])
-    
+
     employees_json = request.POST.get("employees")
     employees = json.loads(employees_json)
     try:
+        typeToPut= ""
+        if(request.POST["typeWritten"] == ""):
+            typeToPut = TypeEvent.objects.get(id=request.POST["typeEvent"])
+        else:
+            type_name = request.POST["typeWritten"]
+            type_event = TypeEvent.objects.filter(type=type_name).first()
+            if type_event:
+                typeToPut = type_event
+            else:
+                typeToPut = TypeEvent.objects.create(type=request.POST["typeWritten"])
         event = Event.objects.create(
             name=request.POST["name"],
             startDate=request.POST["startDate"],
             endDate=request.POST["endDate"],
             place=Place.objects.get(id=request.POST["place"]),
-            typeEvent=TypeEvent.objects.get(id=request.POST["typeEvent"]),
+            typeEvent=typeToPut,
             client=Person.objects.get(dni=request.POST["client"]),
         )
         event.full_clean()
         event.save()
-        
+
         if employees_json:
             for employee in employees:
                 try:
                     person = Person.objects.get(dni=employee["dni"])
                     role = Role.objects.get(id=employee["role"])
-                    WorkersByEvent.objects.create(
-                        event=event, person=person, role=role
-                    )
+                    WorkersByEvent.objects.create(event=event, person=person, role=role)
                 except Person.DoesNotExist:
                     continue
     except ValidationError as v:
@@ -81,18 +89,30 @@ def editEvent(request):
         event.startDate = request.POST["startDate"]
         event.endDate = request.POST["endDate"]
         event.place = Place.objects.get(id=request.POST["place"])
-        event.typeEvent = TypeEvent.objects.get(id=request.POST["typeEvent"])
+        if(request.POST["typeWritten"] == ""):
+            event.typeEvent = TypeEvent.objects.get(id=request.POST["typeEvent"])
+        else:
+            type_name = request.POST["typeWritten"]
+            type_event = TypeEvent.objects.filter(type=type_name).first()
+            if type_event:
+                event.typeEvent = type_event
+            else:
+                event.typeEvent = TypeEvent.objects.create(type=request.POST["typeWritten"])
         event.client = Person.objects.get(dni=request.POST["client"])
         event.full_clean()
         event.save()
-        
+
         WorkersByEvent.objects.filter(event=event).delete()
-        
+
         if employees_json:
             for employee in employees:
                 try:
                     person = Person.objects.get(dni=employee["dni"])
-                    role = Role.objects.get(id=employee["role"])
+                    role_value = employee["role"]
+                    if isinstance(role_value, int) or (isinstance(role_value, str) and role_value.isdigit()):
+                        role = Role.objects.get(id=role_value)
+                    else:
+                        role = Role.objects.create(name=role_value, description="")
                     salary = employee["salary"]
                     WorkersByEvent.objects.create(
                         event=event, person=person, role=role, salary=salary
@@ -117,7 +137,8 @@ def getEventById(id):
         return Event.objects.get(id=id)
     except Person.DoesNotExist:
         raise Person.DoesNotExist(f"No se encontró un evento con el id {id}")
-    
+
+
 def getEmployeesByEvent(id):
     print("función getEmployeesByEvent")
     print(id)
@@ -128,18 +149,31 @@ def getEmployeesByEvent(id):
     except Event.DoesNotExist:
         raise Event.DoesNotExist(f"No se encontró un evento con el id {id}")
 
+
 def getEmployeesDataByEvent(id):
     try:
         event = Event.objects.get(id=id)
         workers = WorkersByEvent.objects.filter(event=event)
         employees_data = []
         for worker in workers:
-            employees_data.append({
-                "id": str(worker.person.dni),
-                "name": str(worker.person.name),
-                "salary": str(worker.salary),
-                "role": str(worker.role.name)
-            })
+            employees_data.append(
+                {
+                    "id": str(worker.person.dni),
+                    "name": str(worker.person.name),
+                    "salary": str(worker.salary),
+                    "role": str(worker.role.name),
+                }
+            )
         return employees_data
     except Event.DoesNotExist:
         return []
+
+
+def createPlace(request):
+    place = Place.objects.create(
+        city=request.POST["city"],
+        address=request.POST["direction"],
+        name=request.POST["placeName"],
+    )
+    place.save()
+    return place
